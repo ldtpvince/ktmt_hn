@@ -1,7 +1,15 @@
 #include <iostream>
+#include <istream>
 #include <string>
 #include "QInt.h"
 using namespace std;
+
+QInt::QInt() {
+	for (int i = 0; i < 4; i++) {
+		data[i] = 0;
+	}
+	binLen = 0;
+}
 
 string div2Dec(string src) {
 	string result;
@@ -26,24 +34,65 @@ string div2Dec(string src) {
 	return result;
 }
 
-int QInt::setBit(int& data, int offset) {
-	return (data | (1 << (31 - offset)));
+int setBit1(int& data, int offset) {
+	data = (data | (1 << (31 - offset)));
+	return 0;
 }
 
-int QInt::getBit(int data, int offset) {
+int getBit(int data, int offset) {
 	return (data >> (31 - offset) & 1);
 }
 
-void ScanQInt(QInt& x) {
+void ScanQInt(istream& in, QInt& x, int base) {
 	string temp;
-	getline(cin, temp);
+	in >> temp;
 	int numlen = temp.size();
 
-	while (numlen > 1) {
+	switch (base) {
+	case 2: {
+		for (int i = 0; i < numlen; i++) {
+			if (temp[numlen - 1 - i] == '1') {
+				setBit1(x.data[i / 32], i % 32);
+			}
+		}
+		x.binLen = numlen;
+		break;
+	}
+	case 10: {
+		while (numlen > 1 || temp[0] >= 1) {
+			if (temp[numlen - 1] % 2 == 1) {
+				setBit1(x.data[x.binLen / 32], x.binLen % 32);
+				x.binLen++;
+			}
+			else {
+				x.binLen++;
+			}
+			temp = div2Dec(temp);
+			numlen = temp.size();
+		}
+		break;
+	}
+	}
+
+	
+}
+
+bool* DecToBin(QInt x) {
+	bool* result = new bool[x.binLen];
+	for (int i = 0; i < x.binLen; i++) {
 		
 	}
+	return nullptr;
+}
+
+void PrintQBit(QInt x) {
+	string result;
+
+
 }
 
 void main() {
-	cout << div2Dec("4");
+	QInt x;
+	ScanQInt(cin, x, 2);
+
 }

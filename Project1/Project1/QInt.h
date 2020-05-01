@@ -1,13 +1,17 @@
 #pragma once
+#include <iostream>
 
 class QInt {
 private:
 	int data[4];
+	int binLen;
 
 public:
-	static int setBit(int& data, int offset);
-	static int getBit(int data, int offset);
+	QInt();
 
-	friend void scanQInt(QInt& x);
-	friend void printQInt(QInt x);
+	friend int setBit1(int& data, int offset);
+	friend int getBit(int data, int offset);
+
+	friend void ScanQInt(std::istream& is, QInt& x, int base);
+	friend void PrintQInt(QInt x);
 };
