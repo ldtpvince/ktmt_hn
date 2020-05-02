@@ -156,6 +156,37 @@ QInt QInt::operator <<(int index)
 	return Result;
 }
 
+QInt QInt::operator <<(int index)
+{
+	// Chuyen QInt ve day bit
+	string a = DecToBin(*this);
+	//Ghi lai bit dau
+	char bit_dau = a[0];
+	a = a.substr(index);
+	string b(index, '0');
+	a = a + b;
+	// Gan lai bit dau
+	a[0] = bit_dau;
+	QInt Result = BinToDec(a);
+	return Result;
+}
+
+QInt QInt::operator >>(int index)
+{
+	// Chuyen QInt ve day bit
+	string a = DecToBin(*this);
+	//Ghi lai bit dau
+	char bit_dau = a[0];
+	a = a.substr(0, 128 - index);
+	string b(index, bit_dau);
+	a = b + a;
+	// Gan lai bit dau
+	a[0] = bit_dau;
+	QInt Result = BinToDec(a);
+	return Result;
+}
+
+
 int main() {
 	cout << div2Dec("4");
 

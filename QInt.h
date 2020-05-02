@@ -27,5 +27,5 @@ public:
 
 	// Phep dich bit
 	QInt operator <<(int index);
-	QInt operator >> (int index) const;
+	QInt operator >>(int index);
 };
