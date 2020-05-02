@@ -12,10 +12,13 @@ private:
 public:
 	QInt();
 
+	std::string QIntToBin();
+	string QIntToDec();
+	string QIntToHex();
+
 	friend int setBit1(int& data, int offset);
 	friend int getBit(int data, int offset);
 
-	friend bool* DecToBin(QInt x);
 	friend QInt binToQInt(std::string bin);
 
 	friend void ScanQInt(std::istream& in, QInt& x, int base);
