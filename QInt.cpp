@@ -54,30 +54,30 @@ void ScanQInt(QInt& x) {
 }
 
 //Ham chuyen doi tu thap phan sang nhi phan
-//string DecToBin(QInt x)
-//{
-//	string bits(128,' ');
-//	for (int i = 0; i < 4; i++)
-//		for (int j = 0; j < 32; j++)
-//		{
-//			if (x.getBit(x.data[i], j) == 1)
-//				bits[i * 32 + j] = '1';
-//			else bits[i * 32 + j] = '0';
-//		}
-//	return bits;
-//}
-//
-//QInt QInt::BinToDec(string bits)
-//{
-//	QInt Result;
-//	for (int i = 0; i < 4; i++)
-//		for (int j = 0; j < 32; j++)
-//			if (bits[i * 32 + j] == 1)
-//				Result.data[i] = QInt::setBit(Result.data[i], j);
-//	return Result;
-//}
+string DecToBin(QInt x)
+{
+	string bits(128,' ');
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 32; j++)
+		{
+			if (x.getBit(x.data[i], j) == 1)
+				bits[i * 32 + j] = '1';
+			else bits[i * 32 + j] = '0';
+		}
+	return bits;
+}
 
-QInt QInt::operator +(const QInt& x)
+QInt BinToDec(string bits)
+{
+	QInt Result;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 32; j++)
+			if (bits[i * 32 + j] == 1)
+				Result.data[i] = QInt::setBit(Result.data[i], j);
+	return Result;
+}
+
+QInt QInt::operator +(const QInt& x) const
 {
 	string Kqua(128, ' ');
 	string a = DecToBin(*this), b = DecToBin(x);
@@ -104,7 +104,7 @@ QInt QInt::operator +(const QInt& x)
 	return Result;
 }
 
-QInt QInt::operator -(const QInt& x)
+QInt QInt::operator -(const QInt& x) const
 {
 	string Kqua(128, ' ');
 	string a = DecToBin(*this), b = DecToBin(x);
@@ -141,7 +141,38 @@ QInt QInt::operator -(const QInt& x)
 	return Result;
 }
 
-QInt QInt::operator <<(int index)
+//Toan tu logic
+QInt QInt::operator& (const QInt& x) const
+{
+	QInt Ketqua;
+	for (int i = 0; i < 4; i++)
+		Ketqua.data[i] = ((*this).data[i] & x.data[i]);
+	return Ketqua;
+}
+
+QInt QInt::operator| (const QInt& x) const
+{
+	QInt Ketqua;
+	for (int i = 0; i < 4; i++)
+		Ketqua.data[i] = ((*this).data[i] | x.data[i]);
+	return Ketqua;
+}
+QInt QInt::operator^ (const QInt& x) const
+{
+	QInt Ketqua;
+	for (int i = 0; i < 4; i++)
+		Ketqua.data[i] = ((*this).data[i] ^ x.data[i]);
+	return Ketqua;
+}
+QInt QInt::operator~ () const
+{
+	QInt Ketqua;
+	for (int i = 0; i < 4; i++)
+		Ketqua.data[i] = (~(*this).data[i]);
+	return Ketqua;
+}
+
+QInt QInt::operator <<(int index) const
 {
 	// Chuyen QInt ve day bit
 	string a = DecToBin(*this);
@@ -156,22 +187,7 @@ QInt QInt::operator <<(int index)
 	return Result;
 }
 
-QInt QInt::operator <<(int index)
-{
-	// Chuyen QInt ve day bit
-	string a = DecToBin(*this);
-	//Ghi lai bit dau
-	char bit_dau = a[0];
-	a = a.substr(index);
-	string b(index, '0');
-	a = a + b;
-	// Gan lai bit dau
-	a[0] = bit_dau;
-	QInt Result = BinToDec(a);
-	return Result;
-}
-
-QInt QInt::operator >>(int index)
+QInt QInt::operator >>(int index) const
 {
 	// Chuyen QInt ve day bit
 	string a = DecToBin(*this);
@@ -180,12 +196,35 @@ QInt QInt::operator >>(int index)
 	a = a.substr(0, 128 - index);
 	string b(index, bit_dau);
 	a = b + a;
-	// Gan lai bit dau
-	a[0] = bit_dau;
 	QInt Result = BinToDec(a);
 	return Result;
 }
 
+QInt QInt::rol(int nums) const
+{
+	// Chuyen QInt ve day bit
+	string a = DecToBin(*this);
+	//Ghi lai cac bit ben trai
+	string left = a.substr(0, nums);
+	a = a.substr(nums);
+	// Chuyen nums bit trai ve cuoi
+	a = a + left;
+	QInt Result = BinToDec(a);
+	return Result;
+}
+
+QInt QInt::ror(int nums) const
+{
+	// Chuyen QInt ve day bit
+	string a = DecToBin(*this);
+	//Ghi lai cac bit ben phai
+	string right = a.substr(128 - nums);
+	a = a.substr(0, 128 - nums);
+	// Chuyen nums bit phai len dau
+	a = right + a;
+	QInt Result = BinToDec(a);
+	return Result;
+}
 
 int main() {
 	cout << div2Dec("4");

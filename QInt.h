@@ -20,12 +20,21 @@ public:
 	friend void printQInt(QInt x);
 
 	friend std::string DecToBin(QInt x);
-	QInt BinToDec(std::string bits);
+	friend QInt BinToDec(std::string bits);
 
-	QInt operator +(const QInt& x);
-	QInt operator -(const QInt& x);
+	QInt operator +(const QInt& x) const;
+	QInt operator -(const QInt& x) const;
+
+	// Cac toan tu logic
+	QInt operator& (const QInt& x) const;
+	QInt operator| (const QInt& x) const;
+	QInt operator^ (const QInt& x) const;
+	QInt operator~ () const;
 
 	// Phep dich bit
-	QInt operator <<(int index);
-	QInt operator >>(int index);
+	QInt operator <<(int index) const;
+	QInt operator >>(int index) const;
+	//Phep xoay
+	QInt rol(int nums) const;
+	QInt ror(int nums) const;
 };
