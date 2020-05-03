@@ -141,6 +141,87 @@ QInt QInt::operator -(const QInt& x) const
 	return Result;
 }
 
+QInt QInt::operator* (const QInt& x) const
+{
+	//Kiem tra nhan voi 0
+	if ((*this) == QInt::zero() || x == QInt::zero())
+		return QInt();
+
+}
+
+QInt QInt::operator/ (const QInt& x) const
+{
+
+}
+
+//Cac toan tu so sanh va gan
+bool QInt::operator> (const QInt& x) const
+{
+	bool isANegative = (*this).isNegative();
+	bool isxNegative = x.isNegative();
+	//Hai so trai dau
+	if (isANegative != isxNegative)
+	{
+		return (isANegative == false);
+	}
+
+	string a = DecToBin(*this), b = DecToBin(x);
+	//Hai so cung dau
+	int index = 1;
+	while (a[index] == b[index])index++;
+	return (a[index] == '1');
+}
+
+bool QInt::operator< (const QInt& x) const
+{
+	bool isANegative = (*this).isNegative();
+	bool isxNegative = x.isNegative();
+	//Hai so trai dau
+	if (isANegative != isxNegative)
+	{
+		return (isANegative == true);
+	}
+
+	string a = DecToBin(*this), b = DecToBin(x);
+	//Hai so cung dau
+	int index = 1;
+	while (a[index] == b[index])index++;
+	return (a[index] == '0');
+}
+
+bool QInt::operator== (const QInt& x) const
+{
+	for (int i = 0; i < QINT_LENGTH; i++)
+		if ((*this).data[i] != x.data[i])
+			return false;
+	return true;
+}
+
+bool QInt::operator!= (const QInt& x) const
+{
+	// Phu dinh cua toan tu bang
+	return !((*this) == x);
+}
+
+bool QInt::operator>= (const QInt& x) const
+{
+	//Phu dinh toan tu be hon
+	return !((*this) < x);
+}
+
+bool QInt::operator<= (const QInt& x) const
+{
+	//Phu dinh toan tu lon hon
+	return !((*this) > x);
+}
+
+QInt& QInt::operator= (const QInt& x)
+{
+	for (int i = 0; i < QINT_SIZE; i++)
+		(*this).data[i] = x.data[i];
+	return (*this);
+}
+
 //Toan tu logic
 QInt QInt::operator& (const QInt& x) const
 {
@@ -157,6 +238,7 @@ QInt QInt::operator| (const QInt& x) const
 		Ketqua.data[i] = ((*this).data[i] | x.data[i]);
 	return Ketqua;
 }
+
 QInt QInt::operator^ (const QInt& x) const
 {
 	QInt Ketqua;
@@ -164,6 +246,7 @@ QInt QInt::operator^ (const QInt& x) const
 		Ketqua.data[i] = ((*this).data[i] ^ x.data[i]);
 	return Ketqua;
 }
+
 QInt QInt::operator~ () const
 {
 	QInt Ketqua;
@@ -226,9 +309,22 @@ QInt QInt::ror(int nums) const
 	return Result;
 }
 
-int main() {
-	cout << div2Dec("4");
+QInt QInt::zero()
+{
+	static QInt staticZero;
+	static bool zeroInit = false;
+	if (!zeroInit)
+	{
+		for (int i = 0; i < 4; i++)
+			staticZero.data[i] = 0;
+		zeroInit = true;
+	}
+	return staticZero;
+}
 
-	getchar();
-	return 0;
+//Kiem tra QInt la so am hay khong
+bool QInt::isNegative() const
+{
+	// Kiem tra bit dau tien
+	return getBit((*this).data[0], 0) == 1;
 }
