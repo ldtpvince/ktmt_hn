@@ -4,8 +4,8 @@
 #include <istream>
 #include <ostream>
 
-#define QINT_SIZE 16;
-#define QINT_LENGTH 4;
+#define QINT_SIZE 32
+#define QINT_LENGTH 4
 
 class QInt {
 private:
@@ -16,8 +16,8 @@ public:
 	QInt();
 
 	std::string QIntToBin();
-	string QIntToDec();
-	string QIntToHex();
+	std::string QIntToDec();
+	std::string QIntToHex();
 
 	friend int setBit1(int& data, int offset);
 	friend int getBit(int data, int offset);
@@ -59,9 +59,20 @@ public:
 	QInt rol(int nums) const;
 	QInt ror(int nums) const;
 
-	//Ham con
+	//CAC HAM PHU
+	//Khoi tao QInt = 0
 	static QInt zero();
+	static QInt negativeOne();
+	static QInt min();
+
+	//Kiem tra QInt co la so am hay khong
 	bool isNegative() const;
+
+	static int setBit0(int& data, int offset);
 	static int setBit1(int& data, int offset);
 	static int getBit(int data, int offset);
+
+	//Ham cong, tru 2 so QInt khong kiem tra tran so
+	friend QInt plusQInt(const QInt & x, const QInt & y);
+	friend QInt substractQInt(const QInt & x, const QInt & y);
 };

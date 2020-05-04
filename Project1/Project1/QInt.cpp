@@ -2,7 +2,7 @@
 using namespace std;
 
 QInt::QInt() {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < QINT_LENGTH;i++) {
 		data[i] = 0;
 	}
 	binLen = 0;
@@ -285,12 +285,51 @@ QInt QInt::operator -(const QInt& x) const
 	return Result;
 }
 
-QInt QInt::operator* (const QInt& x) const
+QInt QInt::operator* (const QInt& M) const
 {
 	//Kiem tra nhan voi 0
-	if ((*this) == QInt::zero() || x == QInt::zero())
+	if ((*this) == QInt::zero() || M == QInt::zero())
 		return QInt();
+	// Truong hop tran so dac biet
+	if ((*this == QInt::min() && M == QInt::negativeOne()) || (*this == QInt::negativeOne() && M == QInt::min()))
+	{
+		throw "OVERFLOW";
+		return QInt();
+	}
+	//Nhan theo thuat toan Booth:
+	QInt A;
+	QInt Q = *this;
+	bool P = 0; // Q_-1: Khoi tao gia tri ban dau la bit 0
+	for (int i = 0; i < QINT_SIZE * QINT_LENGTH; i++)
+	{
+		// Lay bit trai nhat cua Q
+		bool LSB_Q = getBit(Q.data[QINT_LENGTH - 1], QINT_SIZE - 1);
 
+		//TH1: Q_0 = 0, Q_-1 = 1 : A = A + M
+		if (P == true && LSB_Q == false)
+			A = plusQInt(A, M);
+		//TH2: Q_0 = 1, Q_-1 = 0 : A = A - M
+		else if (P == false && LSB_Q == true)
+			A = substractQInt(A, M);
+
+		//Dich bit
+		P = LSB_Q;
+		Q >> 1;
+
+		// Dich bit trai nhat cua A sang Q
+		if (getBit(A.data[QINT_LENGTH - 1], QINT_SIZE - 1) == 1)
+			setBit1(Q.data[0], 0);
+		else
+			setBit0(Q.data[0], 0);
+		A >> 1;
+	}
+	//Kiem tra tran so
+	if (Q / M != *this)
+	{
+		throw "OVERFLOW";
+		return QInt();
+	}
+	return Q;
 }
 
 QInt QInt::operator/ (const QInt& x) const
@@ -361,7 +400,7 @@ bool QInt::operator<= (const QInt& x) const
 
 QInt& QInt::operator= (const QInt& x)
 {
-	for (int i = 0; i < QINT_SIZE; i++)
+	for (int i = 0; i < QINT_LENGTH; i++)
 		(*this).data[i] = x.data[i];
 	return (*this);
 }
@@ -453,6 +492,8 @@ QInt QInt::ror(int nums) const
 	return Result;
 }
 
+//CAC HAM PHU
+
 QInt QInt::zero()
 {
 	static QInt staticZero;
@@ -466,11 +507,43 @@ QInt QInt::zero()
 	return staticZero;
 }
 
+QInt QInt::negativeOne()
+{
+	static QInt staticNegativeOne;
+	static bool negativeOneInit = false;
+	if (!negativeOneInit)
+	{
+		for (int i = 0; i < QINT_LENGTH; i++)
+			staticNegativeOne.data[i] = -1;
+		negativeOneInit = true;
+	}
+	return staticNegativeOne;
+}
+
+QInt QInt::min()
+{
+	static QInt staticMin;
+	static bool minInit = false;
+	if (!minInit)
+	{
+		for (int i = 0; i < 4; i++)
+			staticMin.data[i] = 0;
+		//Set bit dau thanh 1
+		setBit1(staticMin.data[0], 0);
+		minInit = true;
+	}
+	return staticMin;
+}
+
 //Kiem tra QInt la so am hay khong
 bool QInt::isNegative() const
 {
 	// Kiem tra bit dau tien
 	return getBit((*this).data[0], 0) == 1;
+}
+
+int QInt::setBit0(int& data, int offset) {
+	return (data & (0 << (31 - offset)));
 }
 
 int QInt::setBit1(int& data, int offset) {
@@ -480,4 +553,69 @@ int QInt::setBit1(int& data, int offset) {
 //Tra ve gia tri cua bit thu offset
 int QInt::getBit(int data, int offset) {
 	return (data >> (31 - offset) & 1);
+}
+
+//Phep cong khong xu ly tran so
+QInt plusQInt(const QInt& x, const QInt& y)
+{
+	string result(QINT_LENGTH * QINT_SIZE, ' ');
+	string a = DecToBin(x), b = DecToBin(y);
+	// Bit nho
+	char bit_Carry = '0';
+	for (int i = 0; i < QINT_LENGTH * QINT_SIZE; i++)
+	{
+		if (a[i] == b[i])
+		{
+			if (a[i] == '0')
+				result[i] = bit_Carry, bit_Carry = '0';
+			else
+				result[i] = bit_Carry, bit_Carry = '1';
+		}
+		else
+		{
+			if (bit_Carry = '0')
+				result[i] = '1', bit_Carry = '0';
+			else
+				result[i] = '0', bit_Carry = '1';
+		}
+	}
+	QInt _result = BinToDec(result);
+	return _result;
+}
+
+QInt substractQInt(const QInt& x, const QInt& y)
+{
+	string result(128, ' ');
+	string a = DecToBin(x), b = DecToBin(y);
+	// Bit nho
+	char bit_Carry = '0';
+	for (int i = 0; i < 128; i++)
+	{
+		if (a[i] == b[i])
+		{
+			if (bit_Carry == '0')
+				result[i] = bit_Carry = '0';
+			else
+				result[i] = bit_Carry = '1';
+		}
+		else
+		{
+			if (a[i] = '0')
+			{
+				if (bit_Carry = '1')
+					result = '0', bit_Carry = '1';
+				else
+					result = bit_Carry = '1';
+			}
+			else if (a[i] = '0')
+			{
+				if (bit_Carry = '1')
+					result = '0', bit_Carry = '1';
+				else
+					result = bit_Carry = '1';
+			}
+		}
+	}
+	QInt _result = BinToDec(result);
+	return _result;
 }
