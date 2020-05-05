@@ -14,26 +14,25 @@ private:
 
 public:
 	QInt();
+	//QInt(string dec);
+	QInt(unsigned int dec);
 
-	std::string QIntToBin();
-	std::string QIntToDec();
-	std::string QIntToHex();
+	// Cac ham chuyen doi
+	int QIntBinSize();
 
-	friend int setBit1(int& data, int offset);
-	friend int getBit(int data, int offset);
-
-	friend QInt binToQInt(std::string bin);
+	std::string QIntToStrDec();
+	friend std::string DecToBin(QInt x);
+	friend QInt BinToDec(std::string bits);
+	friend std::string BinToHex(std::string hex);
+	friend std::string DecToHex(QInt x);
+	friend std::string DecTo128Bin(QInt x);
 
 	friend void ScanQInt(std::istream& in, QInt& x, int base);
 	friend void PrintQInt(std::ostream& out, QInt x, int base);
 
-	//Chuyen tu QInt sang chuoi nhi phan va nguoc lai
-	friend std::string DecToBin(QInt x);
-	friend QInt BinToDec(std::string bits);
-
 	//Cac toan tu 
-	QInt operator +(const QInt& x) const;
-	QInt operator -(const QInt& x) const;
+	QInt operator+ (const QInt& x) const;
+	QInt operator- (const QInt& x) const;
 	QInt operator* (const QInt& x) const;
 	QInt operator/ (const QInt& x) const;
 
@@ -55,6 +54,7 @@ public:
 	// Phep dich bit
 	QInt operator <<(int index) const;
 	QInt operator >> (int index) const;
+
 	//Phep xoay
 	QInt rol(int nums) const;
 	QInt ror(int nums) const;
@@ -71,8 +71,13 @@ public:
 	static int setBit0(int& data, int offset);
 	static int setBit1(int& data, int offset);
 	static int getBit(int data, int offset);
+	int getBitAt(int pos);
+	void setBitAt(int pos, bool type);
 
-	//Ham cong, tru 2 so QInt khong kiem tra tran so
+	//Ham chia lay nguyen va du va ham cong, tru 2 so QInt khong kiem tra tran so
+	QInt divide(const QInt& div, QInt& r) const;
 	friend QInt plusQInt(const QInt & x, const QInt & y);
 	friend QInt substractQInt(const QInt & x, const QInt & y);
 };
+
+QInt BinToDec(std::string bin);

@@ -1,4 +1,4 @@
-#include "QInt.h"
+﻿#include "QInt.h"
 using namespace std;
 
 QInt::QInt() {
@@ -8,6 +8,28 @@ QInt::QInt() {
 	binLen = 0;
 }
 
+QInt::QInt(unsigned int dec) {
+	for (int i = 0; i < QINT_LENGTH - 1; i++) {
+		data[i] = 0;
+	}
+	data[QINT_LENGTH - 1] = dec;
+	binLen = QIntBinSize();
+}
+
+int QInt::QIntBinSize() {
+	int countSize = 0;
+	for (int i = 127; i >= 0; i--) {
+		if (getBitAt(i) == 1) {
+			break;
+		}
+		countSize++;
+	}
+	binLen = 128 - countSize;
+	return binLen;
+}
+
+// ------------------------------------------------------Ham kiem tra so am----------------------------------------------------
+// Ham kiem tra chuoi thap phan co am hay khong
 bool isNegativeDec(string& dec) {
 	if (dec[0] == '-') {
 		dec.erase(0, 1);
@@ -16,11 +38,57 @@ bool isNegativeDec(string& dec) {
 	return false;
 }
 
+// Ham kiem tra chuoi nhi phan co am hay khong
 bool isNegativeBin(string bin) {
 	if (bin[0] == '1') {
 		return true;
 	}
 	return false;
+}
+
+//Kiem tra QInt la so am hay khong
+bool QInt::isNegative() const
+{
+	// Kiem tra bit dau tien
+	return getBit((*this).data[0], 0) == 1;
+}
+
+// ------------------------------------------------------Ham xử lý trên bit----------------------------------------------------
+int QInt::setBit0(int& data, int offset) {
+	data = (data & ~(0 << (31 - offset)));
+	return (data & ~(0 << (31 - offset)));
+}
+
+int QInt::setBit1(int& data, int offset) {
+	data = data | (1 << (31 - offset));
+	return data;
+}
+
+//Tra ve gia tri cua bit thu offset
+int QInt::getBit(int data, int offset) {
+	return (data >> (31 - offset) & 1);
+}
+
+int QInt::getBitAt(int pos) {
+	return getBit(data[3 - pos / 32], 31 - pos % 32);
+}
+
+void QInt::setBitAt(int pos, bool type) {
+	int countSize = 0;
+	if (type == 1) {
+		setBit1((*this).data[3 - pos / 32], 31 - pos % 32);
+	}
+	else {
+		setBit0((*this).data[3 - pos / 32], 31 - pos % 32);
+	}
+
+	for (int i = 127; i >= 0; i--) {
+		if (getBitAt(i) == 1) {
+			break;
+		}
+		countSize++;
+	}
+	binLen = 128 - countSize;
 }
 
 string div2Dec(string src) {
@@ -47,17 +115,7 @@ string div2Dec(string src) {
 	return result;
 }
 
-int setBit1(int& data, int offset) {
-	data = (data | (1 << (31 - offset)));
-	return 0;
-}
-
-int getBit(int data, int offset) {
-	return (data >> (31 - offset) & 1);
-}
-
-// ------------------------------------------------------Ham scan----------------------------------------------------
-
+// ------------------------------------------------------Ham chuyen doi----------------------------------------------------
 // Ham chuyen mot ki tu so thap luc phan thanh ki tu thap phan
 string charHexToDec(char hex) {
 	string result;
@@ -135,19 +193,64 @@ string strHexToBin(string hex) {
 }
 
 // Ham nhap mot chuoi so nhi phan thanh so QInt
-QInt binToQInt(string bin) {
+QInt BinToDec(string bin) {
 	QInt result;
+	int countSize = 0;
 
 	for (int i = bin.size() - 1 ; i  >= 0; i--) {
 		if (bin[i] == '1') {
-			setBit1(result.data[3 - (bin.size() - i - 1) / 32], 31 - bin.size() + 1 + i);
+			QInt::setBit1(result.data[3 - (bin.size() - i - 1) / 32], 31 - bin.size() + 1 + i);
 		}
 	}
-	result.binLen = bin.size();
+	
+	for (int i = 0; i < bin.size(); i++) {
+		if (bin[i] == '1') {
+			break;
+		}
+		countSize++;
+	}
+	result.binLen = bin.size() - countSize;
 
 	return result;
 }
 
+// Ham chuyen tu sothap phan QInt sang chuoi nhi phan
+string DecToBin(QInt x) {
+	string result = {};
+
+	for (int i = 0; i < x.binLen; i++) {
+		char bit = x.getBit(x.data[3 - i / 32], 31 - i % 32) + '0';
+		result.insert(result.begin(), bit);
+	}
+
+	return result;
+}
+
+// Ham chuyen tu chuoi thap luc phan sang chuoi nhi phan
+string BinToHex(string hex) {
+	return strHexToBin(hex);
+}
+
+// Ham chuyen tu so thap phan QInt sang chuoi thap luc phan
+string DecToHex(QInt x) {
+	string temp = DecToBin(x);
+	return strHexToBin(temp);
+}
+
+string QInt::QIntToStrDec() {
+	QInt d = 10, q = *this, r;
+	string result = {};
+	char c;
+	do {
+		q = q.divide(d, r);
+		c = r.getBitAt(0) + r.getBitAt(1) * 2 + r.getBitAt(2) * 4 + r.getBitAt(3) * 8 + '0';
+		result.insert(result.begin(), c);
+		r = 0;
+	} while (q.binLen > 0);
+	return result;
+}
+
+// ------------------------------------------------------Ham scan----------------------------------------------------
 // Ham nhap mot chuoi so va luu vao QInt voi co so tuong ung
 void ScanQInt(istream& in, QInt& x, int base) {
 	string temp;
@@ -156,40 +259,36 @@ void ScanQInt(istream& in, QInt& x, int base) {
 
 	switch (base) {
 	case 2: {
-		x = binToQInt(temp);
+		x = BinToDec(temp);
 		break;
 	}
 	case 10: {
-		x = binToQInt(strDecToBin(temp));
+		x = BinToDec(strDecToBin(temp));
 		break;
 	}
 	case 16: {
-		x = binToQInt(strHexToBin(temp));
+		x = BinToDec(strHexToBin(temp));
 		break;
 	}
 	}
 }
 
 // ------------------------------------------------------Ham print----------------------------------------------------
-
-string QInt::QIntToBin() {
-	string result;
-	for (int i = 0; i < binLen; i++) {
-
-	}
-}
 // Gom 3 ham chuyen tu QInt -> string nhi phan -> chuyen qua cac co so khac nhu thap phan hay thap luc phan
 void PrintQInt(std::ostream& out, QInt x, int base) {
 	string result;
 
 	switch (base) {
 	case 2: {
-		for (int i = 0; i < x.binLen; i++) {
-			result.push_back(getBit(x.data[i / 32], i % 32));
-		}
+		out << DecToBin(x);
 		break;
 	}
 	case 10: {
+		out << x.QIntToStrDec();
+		break;
+	}
+	case 16: {
+		out << DecToHex(x);
 		break;
 	}
 	}
@@ -198,7 +297,7 @@ void PrintQInt(std::ostream& out, QInt x, int base) {
 }
 
 //Ham chuyen doi tu thap phan sang nhi phan
-string DecToBin(QInt x)
+string DecTo128Bin(QInt x)
 {
 	string bits(128, ' ');
 	for (int i = 0; i < 4; i++)
@@ -211,23 +310,23 @@ string DecToBin(QInt x)
 	return bits;
 }
 
-QInt BinToDec(string bits)
-{
-	QInt Result;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 32; j++)
-			if (bits[i * 32 + j] == 1)
-				Result.data[i] = QInt::setBit1(Result.data[i], j);
-	return Result;
-}
+//QInt BinToDec(string bits)
+//{
+//	QInt Result;
+//	for (int i = 0; i < 4; i++)
+//		for (int j = 0; j < 32; j++)
+//			if (bits[i * 32 + j] == 1)
+//				Result.data[i] = QInt::setBit1(Result.data[i], j);
+//	return Result;
+//}
 
 QInt QInt::operator +(const QInt& x) const
 {
 	string Kqua(128, ' ');
-	string a = DecToBin(*this), b = DecToBin(x);
+	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
 	// Bit nho
 	char bit_Nho = '0';
-	for (int i = 0; i < 128; i++)
+	for (int i = 127; i >= 0; i++)
 	{
 		if (a[i] == b[i])
 		{
@@ -238,7 +337,7 @@ QInt QInt::operator +(const QInt& x) const
 		}
 		else
 		{
-			if (bit_Nho = '0')
+			if (bit_Nho == '0')
 				Kqua[i] = '1', bit_Nho = '0';
 			else
 				Kqua[i] = '0', bit_Nho = '1';
@@ -251,10 +350,10 @@ QInt QInt::operator +(const QInt& x) const
 QInt QInt::operator -(const QInt& x) const
 {
 	string Kqua(128, ' ');
-	string a = DecToBin(*this), b = DecToBin(x);
+	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
 	// Bit nho
 	char bit_Nho = '0';
-	for (int i = 0; i < 128; i++)
+	for (int i = 127; i >= 0; i--)
 	{
 		if (a[i] == b[i])
 		{
@@ -265,19 +364,19 @@ QInt QInt::operator -(const QInt& x) const
 		}
 		else
 		{
-			if (a[i] = '0')
+			if (a[i] == '0')
 			{
-				if (bit_Nho = '1')
-					Kqua = '0', bit_Nho = '1';
+				if (bit_Nho == '1')
+					Kqua[i] = '0', bit_Nho = '1';
 				else
-					Kqua = bit_Nho = '1';
+					Kqua[i] = '1', bit_Nho = '1';
 			}
-			else if (a[i] = '0')
+			else if (a[i] == '1')
 			{
-				if (bit_Nho = '1')
-					Kqua = '0', bit_Nho = '1';
+				if (bit_Nho == '1')
+					Kqua[i] = '0', bit_Nho = '0';
 				else
-					Kqua = bit_Nho = '1';
+					Kqua[i] = '1', bit_Nho = '0';
 			}
 		}
 	}
@@ -332,9 +431,41 @@ QInt QInt::operator* (const QInt& M) const
 	return Q;
 }
 
+QInt QInt::divide(const QInt& div, QInt& r) const{
+	bool isNegative = false;
+	QInt d = div, n = (*this);
+	QInt zero, result;
+	if (n.isNegative()) {
+		n = zero - n;
+		isNegative = !isNegative;
+	}
+
+	if (d.isNegative()) {
+		d = zero - d;
+		isNegative = !isNegative;
+	}
+
+	for (int i = n.binLen - 1; i >= 0; i--) {
+		r = r << 1;
+		bool bit = n.getBitAt(i);
+		r.setBitAt(0, bit);
+
+		if (r >= d) {
+			r = r - d;
+			result.setBitAt(i, 1);
+		}
+	}
+	
+	if (isNegative) {
+		return zero - result;
+	}
+	return result;
+}
+
 QInt QInt::operator/ (const QInt& x) const
 {
-
+	QInt r;
+	return (*this).divide(x, r);
 }
 
 //Cac toan tu so sanh va gan
@@ -348,11 +479,11 @@ bool QInt::operator> (const QInt& x) const
 		return (isANegative == false);
 	}
 
-	string a = DecToBin(*this), b = DecToBin(x);
+	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
 	//Hai so cung dau
 	int index = 1;
 	while (a[index] == b[index])index++;
-	return (a[index] == '1');
+	return (a[index] == '1' && index < 128);
 }
 
 bool QInt::operator< (const QInt& x) const
@@ -365,11 +496,11 @@ bool QInt::operator< (const QInt& x) const
 		return (isANegative == true);
 	}
 
-	string a = DecToBin(*this), b = DecToBin(x);
+	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
 	//Hai so cung dau
 	int index = 1;
-	while (a[index] == b[index])index++;
-	return (a[index] == '0');
+	while (a[index] == b[index] && index < 128)index++;
+	return (a[index] == '0' && index < 128);
 }
 
 bool QInt::operator== (const QInt& x) const
@@ -400,8 +531,9 @@ bool QInt::operator<= (const QInt& x) const
 
 QInt& QInt::operator= (const QInt& x)
 {
-	for (int i = 0; i < QINT_LENGTH; i++)
+	for (int i = 0; i < QINT_LENGTH; i++) 
 		(*this).data[i] = x.data[i];
+	(*this).binLen = x.binLen;
 	return (*this);
 }
 
@@ -441,22 +573,24 @@ QInt QInt::operator~ () const
 QInt QInt::operator <<(int index) const
 {
 	// Chuyen QInt ve day bit
-	string a = DecToBin(*this);
+	string a = DecTo128Bin(*this);
 	//Ghi lai bit dau
 	char bit_dau = a[0];
 	a = a.substr(index);
-	string b(index, '0');
+	string b;
+	for (int i = 0; i < index; i++) {
+		b.push_back('0');
+	}
 	a = a + b;
 	// Gan lai bit dau
-	a[0] = bit_dau;
 	QInt Result = BinToDec(a);
 	return Result;
 }
 
-QInt QInt::operator >> (int index) const
+QInt QInt::operator>> (int index) const
 {
 	// Chuyen QInt ve day bit
-	string a = DecToBin(*this);
+	string a = DecTo128Bin(*this);
 	//Ghi lai bit dau
 	char bit_dau = a[0];
 	a = a.substr(0, 128 - index);
@@ -469,7 +603,7 @@ QInt QInt::operator >> (int index) const
 QInt QInt::rol(int nums) const
 {
 	// Chuyen QInt ve day bit
-	string a = DecToBin(*this);
+	string a = DecTo128Bin(*this);
 	//Ghi lai cac bit ben trai
 	string left = a.substr(0, nums);
 	a = a.substr(nums);
@@ -482,7 +616,7 @@ QInt QInt::rol(int nums) const
 QInt QInt::ror(int nums) const
 {
 	// Chuyen QInt ve day bit
-	string a = DecToBin(*this);
+	string a = DecTo128Bin(*this);
 	//Ghi lai cac bit ben phai
 	string right = a.substr(128 - nums);
 	a = a.substr(0, 128 - nums);
@@ -535,31 +669,11 @@ QInt QInt::min()
 	return staticMin;
 }
 
-//Kiem tra QInt la so am hay khong
-bool QInt::isNegative() const
-{
-	// Kiem tra bit dau tien
-	return getBit((*this).data[0], 0) == 1;
-}
-
-int QInt::setBit0(int& data, int offset) {
-	return (data & (0 << (31 - offset)));
-}
-
-int QInt::setBit1(int& data, int offset) {
-	return (data | (1 << (31 - offset)));
-}
-
-//Tra ve gia tri cua bit thu offset
-int QInt::getBit(int data, int offset) {
-	return (data >> (31 - offset) & 1);
-}
-
 //Phep cong khong xu ly tran so
 QInt plusQInt(const QInt& x, const QInt& y)
 {
 	string result(QINT_LENGTH * QINT_SIZE, ' ');
-	string a = DecToBin(x), b = DecToBin(y);
+	string a = DecTo128Bin(x), b = DecTo128Bin(y);
 	// Bit nho
 	char bit_Carry = '0';
 	for (int i = 0; i < QINT_LENGTH * QINT_SIZE; i++)
@@ -586,7 +700,7 @@ QInt plusQInt(const QInt& x, const QInt& y)
 QInt substractQInt(const QInt& x, const QInt& y)
 {
 	string result(128, ' ');
-	string a = DecToBin(x), b = DecToBin(y);
+	string a = DecTo128Bin(x), b = DecTo128Bin(y);
 	// Bit nho
 	char bit_Carry = '0';
 	for (int i = 0; i < 128; i++)
