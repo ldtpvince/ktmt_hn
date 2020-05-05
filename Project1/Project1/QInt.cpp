@@ -55,8 +55,8 @@ bool QInt::isNegative() const
 
 // ------------------------------------------------------Ham xử lý trên bit----------------------------------------------------
 int QInt::setBit0(int& data, int offset) {
-	data = (data & ~(0 << (31 - offset)));
-	return (data & ~(0 << (31 - offset)));
+	data = (data & ~(1 << (31 - offset)));
+	return (data & ~(1 << (31 - offset)));
 }
 
 int QInt::setBit1(int& data, int offset) {
