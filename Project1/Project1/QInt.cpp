@@ -16,6 +16,11 @@ QInt::QInt(unsigned int dec) {
 	binLen = QIntBinSize();
 }
 
+QInt::QInt(string dec) {
+	string bin = strDecToBin(dec);
+	*this = BinToDec(bin);
+}
+
 int QInt::QIntBinSize() {
 	int countSize = 0;
 	for (int i = 127; i >= 0; i--) {
@@ -241,13 +246,43 @@ string QInt::QIntToStrDec() {
 	QInt d = 10, q = *this, r;
 	string result = {};
 	char c;
+	bool sign = getBitAt(QINT_SIZE * QINT_LENGTH - 1);
 	do {
 		q = q.divide(d, r);
 		c = r.getBitAt(0) + r.getBitAt(1) * 2 + r.getBitAt(2) * 4 + r.getBitAt(3) * 8 + '0';
 		result.insert(result.begin(), c);
 		r = 0;
 	} while (q.binLen > 0);
+	if (sign) {
+		result.insert(result.begin(), '-');
+	}
 	return result;
+}
+
+string QInt::toSignedNumber(bool& sign) {
+	QInt temp = *this;
+	sign = getBitAt(QINT_SIZE * QINT_LENGTH - 1);
+
+	if (sign == 0) {
+		return DecTo128Bin(*this);
+	}
+	else {
+		bool first1Bit = false;
+		for (int i = 0; i < binLen; i++) {
+			bool bit = temp.getBitAt(i);
+			
+			if (!first1Bit) {
+				if (bit == 1) {
+					first1Bit = true;
+				}
+				continue;
+			}
+
+			temp.setBitAt(i, !bit);
+		}
+	}
+
+	return DecTo128Bin(temp);
 }
 
 // ------------------------------------------------------Ham scan----------------------------------------------------

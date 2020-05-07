@@ -25,24 +25,24 @@ string shlSigni(string s, int val) {
 }
 
 //Chuyen sang QInt
-QInt toQInt(string s, bool sign) {
-	QInt result;
-	result = BinToDec(s);
-	if (sign)
-		result = -result;
-	return 0;
-}
+//QInt toQInt(string s, bool sign) {
+//	QInt result;
+//	result = BinToDec(s);
+//	if (sign)
+//		result = -result;
+//	return 0;
+//}
 
 //Cong phan tri
-string addSigni(string a, string b, bool sign_a, bool sign_b, bool& sign) {
-	QInt signi1, signi2, sum;
-	string result;
-	signi1 = toQInt(a, sign_a);
-	signi2 = toQInt(b, sign_b);
-	sum = signi1 + signi2;
-	result = sum.toSignedNumber(sign);
-	return result;
-}
+//string addSigni(string a, string b, bool sign_a, bool sign_b, bool& sign) {
+//	QInt signi1, signi2, sum;
+//	string result;
+//	signi1 = toQInt(a, sign_a);
+//	signi2 = toQInt(b, sign_b);
+//	sum = signi1 + signi2;
+//	result = sum.toSignedNumber(sign);
+//	return result;
+//}
 
 //Chinh sua phan tri: do dai 128 bit, khong tran so
 int editSigni(string s) {
@@ -315,54 +315,54 @@ Qfloat& Qfloat::operator=(const Qfloat& other) {
 	return *this;
 }
 
-Qfloat Qfloat::operator+(const Qfloat& other) {
-	//Xet 1 so bang 0
-	if (this->isZero())
-		return other;
-	if (other.isZero())
-		return *this;
-	//Lay gia tri mu
-	int e1, e2, e;
-	e1 = this->getExp();
-	e2 = other.getExp();
-	//Lay phan tri
-	string s1, s2;
-	s1 = '1' + this->getSigni();
-	s2 = '1' + other.getSigni();
-	//So sanh mu
-	int dist = e1 - e2;
-	if (dist < 0) {
-		s1 = shrSigni(s1, -dist);
-		e = e2;
-	}
-	else {
-		s2 = shrSigni(s1, dist);
-		e = e1;
-	}
-	//Lay dau
-	bool sign1, sign2, sign;
-	sign1 = this->getBit(MAX_N * BIT - 1);
-	sign2 = other.getBit(MAX_N * BIT - 1);
-	sign = 0;
-	string strSigni = addSigni(s1, s2, sign1, sign2, sign);
-	Qfloat zero;
-	if (checkStr(strSigni, '0'))
-		return zero;
-	int temp = editSigni(strSigni);
-	e += temp;
-	if (e < MIN_EXP)
-		return zero;
-	if (e > MAX_EXP)
-		return inf(sign);
-	string strExp = toStrBias(e);
-	char Sign;
-	if (sign)
-		Sign = '1';
-	else
-		Sign = '0';
-	string result = Sign + strExp + strSigni;
-	return result;
-}
+//Qfloat Qfloat::operator+(const Qfloat& other) {
+//	//Xet 1 so bang 0
+//	if (this->isZero())
+//		return other;
+//	if (other.isZero())
+//		return *this;
+//	//Lay gia tri mu
+//	int e1, e2, e;
+//	e1 = this->getExp();
+//	e2 = other.getExp();
+//	//Lay phan tri
+//	string s1, s2;
+//	s1 = '1' + this->getSigni();
+//	s2 = '1' + other.getSigni();
+//	//So sanh mu
+//	int dist = e1 - e2;
+//	if (dist < 0) {
+//		s1 = shrSigni(s1, -dist);
+//		e = e2;
+//	}
+//	else {
+//		s2 = shrSigni(s1, dist);
+//		e = e1;
+//	}
+//	//Lay dau
+//	bool sign1, sign2, sign;
+//	sign1 = this->getBit(MAX_N * BIT - 1);
+//	sign2 = other.getBit(MAX_N * BIT - 1);
+//	sign = 0;
+//	string strSigni = addSigni(s1, s2, sign1, sign2, sign);
+//	Qfloat zero;
+//	if (checkStr(strSigni, '0'))
+//		return zero;
+//	int temp = editSigni(strSigni);
+//	e += temp;
+//	if (e < MIN_EXP)
+//		return zero;
+//	if (e > MAX_EXP)
+//		return inf(sign);
+//	string strExp = toStrBias(e);
+//	char Sign;
+//	if (sign)
+//		Sign = '1';
+//	else
+//		Sign = '0';
+//	string result = Sign + strExp + strSigni;
+//	return result;
+//}
 
 Qfloat Qfloat::operator-(const Qfloat& other) {
 	Qfloat temp = other;
@@ -373,10 +373,10 @@ Qfloat Qfloat::operator-(const Qfloat& other) {
 	return (*this) + temp;
 }
 
-Qfloat Qfloat::operator*(const Qfloat& other) {
-
-}
-
-Qfloat Qfloat::operator/(const Qfloat& other) {
-
-}
+//Qfloat Qfloat::operator*(const Qfloat& other) {
+//
+//}
+//
+//Qfloat Qfloat::operator/(const Qfloat& other) {
+//
+//}

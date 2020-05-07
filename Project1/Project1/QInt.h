@@ -14,11 +14,12 @@ private:
 
 public:
 	QInt();
-	//QInt(string dec);
+	QInt(std::string dec);
 	QInt(unsigned int dec);
 
 	// Cac ham chuyen doi
 	int QIntBinSize();
+	std::string toSignedNumber(bool& sign);
 
 	std::string QIntToStrDec();
 	friend std::string DecToBin(QInt x);
@@ -26,6 +27,7 @@ public:
 	friend std::string BinToHex(std::string hex);
 	friend std::string DecToHex(QInt x);
 	friend std::string DecTo128Bin(QInt x);
+
 
 	friend void ScanQInt(std::istream& in, QInt& x, int base);
 	friend void PrintQInt(std::ostream& out, QInt x, int base);
@@ -81,3 +83,4 @@ public:
 };
 
 QInt BinToDec(std::string bin);
+std::string strDecToBin(std::string dec);
