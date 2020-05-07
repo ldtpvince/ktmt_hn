@@ -5,47 +5,45 @@ using namespace std;
 
 #define MAX_N		4
 #define BIT			32
+#define LEN			MAX_N*BIT
 #define BIT_EXP		15
 #define BIT_SIGN	112
-#define MAX_EXP		(1 << (BIT_EXP - 1)) - 1
-#define MIN_EXP		- (1 << (BIT_EXP - 1)) + 2
+#define BIAS		(1 << (BIT_EXP - 1)) - 1
+#define MAX_EXP		(1 << (BIT_EXP - 1))
+#define MIN_EXP		- (1 << (BIT_EXP - 1)) + 1
 
 class Qfloat
 {
 protected:
-	int data[MAX_N];
+	int data[MAX_N]; //data[0]: 127->96, data[1]: 95->64, ...
 public:
 	//*Cac ham khoi tao*----------------------------------------
 	Qfloat();
 	Qfloat(string s);
 protected:
 	//*Cac ham ho tro*------------------------------------------
-	//Kiem tra chuoi co toan ky tu da cho khong
-	bool checkStr(string s, char c);
-	//Chuyen sang chuoi he thap phan
-	string toStrDec();
 	//Kiem tra bang 0
 	bool isZero() const;
-	//Lay bit
-	bool getBit(int index) const;
-	//Gan bit
-	void setBit(int index, bool bit);
 	//Lay dau
 	string getSigni() const;
 	//Lay mu
 	int getExp()const;
 	//So vo cung
-	Qfloat inf(bool sign);
+	static Qfloat inf(bool sign);
 public:
+	//Lay bit
+	bool getBit(int index) const;
+	//Gan bit
+	void setBit(int index, bool bit);
 	//*Cac ham bai tap yeu cau*--------------------------------
 	//Nhap so thuc
-	static void ScanQfloat(Qfloat& x);
+	static void ScanQfloat(Qfloat& x, string s, int base);
 	//Xuat so thuc
-	static void PrintQfloat(Qfloat x);
+	static string PrintQfloat(Qfloat x, int base);
 	//Chuyen doi Qfloat nhi phan sang thap phan
-	Qfloat BinToDec(string bit);
+	static Qfloat BinToDec(string bit);
 	//Chuyen doi Qfloat thap phan sang nhi phan
-	string DecToBin(Qfloat x);
+	static string DecToBin(Qfloat x);
 public:
 	//Phep gan Qfloat = Qfloat
 	Qfloat& operator=(const Qfloat&);
