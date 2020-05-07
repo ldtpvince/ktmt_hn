@@ -55,8 +55,8 @@ bool QInt::isNegative() const
 
 // ------------------------------------------------------Ham xử lý trên bit----------------------------------------------------
 int QInt::setBit0(int& data, int offset) {
-	data = (data & ~(0 << (31 - offset)));
-	return (data & ~(0 << (31 - offset)));
+	data = (data & ~(1 << (31 - offset)));
+	return (data & ~(1 << (31 - offset)));
 }
 
 int QInt::setBit1(int& data, int offset) {
@@ -322,66 +322,30 @@ string DecTo128Bin(QInt x)
 
 QInt QInt::operator +(const QInt& x) const
 {
-	string Kqua(128, ' ');
-	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
-	// Bit nho
-	char bit_Nho = '0';
-	for (int i = 127; i >= 0; i++)
+	QInt result = plusQInt(*this, x);
+
+	bool isANegative = (*this).isNegative();
+	bool isxNegative = x.isNegative();
+	//Kiem tra tran so: TH tran so: A, x cung dau va tong trai dau
+	if ((isANegative + isxNegative != 1) && (isANegative != result.isNegative()))
 	{
-		if (a[i] == b[i])
-		{
-			if (a[i] == '0')
-				Kqua[i] = bit_Nho, bit_Nho = '0';
-			else
-				Kqua[i] = bit_Nho, bit_Nho = '1';
-		}
-		else
-		{
-			if (bit_Nho == '0')
-				Kqua[i] = '1', bit_Nho = '0';
-			else
-				Kqua[i] = '0', bit_Nho = '1';
-		}
+		throw "OVERFLOW";
 	}
-	QInt Result = BinToDec(Kqua);
-	return Result;
+	return result;
 }
 
 QInt QInt::operator -(const QInt& x) const
 {
-	string Kqua(128, ' ');
-	string a = DecTo128Bin(*this), b = DecTo128Bin(x);
-	// Bit nho
-	char bit_Nho = '0';
-	for (int i = 127; i >= 0; i--)
+	QInt result = substractQInt(*this, x);
+
+	bool isANegative = (*this).isNegative();
+	bool isxNegative = x.isNegative();
+	//Kiem tra tran so: TH tran so: A, x khac dau va hieu trai dau voi so bi tru
+	if ((isANegative + isxNegative == 1) && (isANegative != result.isNegative()))
 	{
-		if (a[i] == b[i])
-		{
-			if (bit_Nho == '0')
-				Kqua[i] = bit_Nho = '0';
-			else
-				Kqua[i] = bit_Nho = '1';
-		}
-		else
-		{
-			if (a[i] == '0')
-			{
-				if (bit_Nho == '1')
-					Kqua[i] = '0', bit_Nho = '1';
-				else
-					Kqua[i] = '1', bit_Nho = '1';
-			}
-			else if (a[i] == '1')
-			{
-				if (bit_Nho == '1')
-					Kqua[i] = '0', bit_Nho = '0';
-				else
-					Kqua[i] = '1', bit_Nho = '0';
-			}
-		}
+		throw "OVERFLOW";
 	}
-	QInt Result = BinToDec(Kqua);
-	return Result;
+	return result;
 }
 
 QInt QInt::operator* (const QInt& M) const
@@ -413,14 +377,14 @@ QInt QInt::operator* (const QInt& M) const
 
 		//Dich bit
 		P = LSB_Q;
-		Q >> 1;
+		Q = Q >> 1;
 
 		// Dich bit trai nhat cua A sang Q
 		if (getBit(A.data[QINT_LENGTH - 1], QINT_SIZE - 1) == 1)
 			setBit1(Q.data[0], 0);
 		else
 			setBit0(Q.data[0], 0);
-		A >> 1;
+		A = A >> 1;
 	}
 	//Kiem tra tran so
 	if (Q / M != *this)
@@ -543,14 +507,16 @@ QInt QInt::operator& (const QInt& x) const
 	QInt Ketqua;
 	for (int i = 0; i < 4; i++)
 		Ketqua.data[i] = ((*this).data[i] & x.data[i]);
+	Ketqua.binLen = Ketqua.QIntBinSize();
 	return Ketqua;
 }
 
 QInt QInt::operator| (const QInt& x) const
 {
 	QInt Ketqua;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < QINT_LENGTH; i++)
 		Ketqua.data[i] = ((*this).data[i] | x.data[i]);
+	Ketqua.binLen = Ketqua.QIntBinSize();
 	return Ketqua;
 }
 
@@ -559,6 +525,7 @@ QInt QInt::operator^ (const QInt& x) const
 	QInt Ketqua;
 	for (int i = 0; i < 4; i++)
 		Ketqua.data[i] = ((*this).data[i] ^ x.data[i]);
+	Ketqua.binLen = Ketqua.QIntBinSize();
 	return Ketqua;
 }
 
@@ -567,6 +534,7 @@ QInt QInt::operator~ () const
 	QInt Ketqua;
 	for (int i = 0; i < 4; i++)
 		Ketqua.data[i] = (~(*this).data[i]);
+	Ketqua.binLen = Ketqua.QIntBinSize();
 	return Ketqua;
 }
 
@@ -669,15 +637,16 @@ QInt QInt::min()
 	return staticMin;
 }
 
-//Phep cong khong xu ly tran so
+// Phep cong, tru khong xu ly tran so
 QInt plusQInt(const QInt& x, const QInt& y)
 {
-	string result(QINT_LENGTH * QINT_SIZE, ' ');
+	string result(128, ' ');
 	string a = DecTo128Bin(x), b = DecTo128Bin(y);
 	// Bit nho
 	char bit_Carry = '0';
-	for (int i = 0; i < QINT_LENGTH * QINT_SIZE; i++)
+	for (int i = QINT_LENGTH * QINT_SIZE - 1; i >= 0; i--)
 	{
+		// TH: 1 + 1 || 0 + 0
 		if (a[i] == b[i])
 		{
 			if (a[i] == '0')
@@ -685,9 +654,10 @@ QInt plusQInt(const QInt& x, const QInt& y)
 			else
 				result[i] = bit_Carry, bit_Carry = '1';
 		}
+		//TH: 0 + 1 || 1 + 0
 		else
 		{
-			if (bit_Carry = '0')
+			if (bit_Carry == '0')
 				result[i] = '1', bit_Carry = '0';
 			else
 				result[i] = '0', bit_Carry = '1';
@@ -703,30 +673,32 @@ QInt substractQInt(const QInt& x, const QInt& y)
 	string a = DecTo128Bin(x), b = DecTo128Bin(y);
 	// Bit nho
 	char bit_Carry = '0';
-	for (int i = 0; i < 128; i++)
+	for (int i = QINT_LENGTH * QINT_SIZE - 1; i >= 0; i--)
 	{
+		// TH: 1 - 1 || 0 - 0
 		if (a[i] == b[i])
 		{
 			if (bit_Carry == '0')
-				result[i] = bit_Carry = '0';
+				result[i] = '0', bit_Carry = '0';
 			else
-				result[i] = bit_Carry = '1';
+				result[i] = '1', bit_Carry = '1';
 		}
+		// TH: 1 - 0 || 0 - 1
 		else
 		{
-			if (a[i] = '0')
+			if (a[i] == '0')
 			{
-				if (bit_Carry = '1')
-					result = '0', bit_Carry = '1';
+				if (bit_Carry == '1')
+					result[i] = '0', bit_Carry = '1';
 				else
-					result = bit_Carry = '1';
+					result[i] = '1', bit_Carry = '1';
 			}
-			else if (a[i] = '0')
+			else if (a[i] == '1')
 			{
-				if (bit_Carry = '1')
-					result = '0', bit_Carry = '1';
+				if (bit_Carry == '1')
+					result[i] = '0', bit_Carry = '0';
 				else
-					result = bit_Carry = '1';
+					result[i] = '1', bit_Carry = '0';
 			}
 		}
 	}
