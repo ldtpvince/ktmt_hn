@@ -80,6 +80,9 @@ public:
 	QInt divide(const QInt& div, QInt& r) const;
 	friend QInt plusQInt(const QInt & x, const QInt & y);
 	friend QInt substractQInt(const QInt & x, const QInt & y);
+
+	// Nhan phan tri cua Qfloat
+	friend std::string productQfloat(std::string a, std::string b);
 };
 
 QInt BinToDec(std::string bin);

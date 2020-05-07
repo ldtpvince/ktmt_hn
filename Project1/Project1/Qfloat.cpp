@@ -458,7 +458,31 @@ Qfloat Qfloat::operator-(const Qfloat& other) {
 }
 
 Qfloat Qfloat::operator*(const Qfloat& other) {
-	Qfloat result;
+	Qfloat zero;
+	//Nhan voi 0
+	if (this->isZero() || other.isZero())
+		return zero;
+	//Lay dau
+	bool sign1, sign2, sign;
+	sign1 = this->getBit(MAX_N * BIT - 1);
+	sign2 = other.getBit(MAX_N * BIT - 1);
+	string strSign = (sign1 == sign2) ? '1' : '0';
+	//Lay gia tri mu
+	int e1, e2, e;
+	e1 = this->getExp();
+	e2 = other.getExp();
+	if (e < MIN_EXP)
+		return zero;
+	if (e > MAX_EXP)
+		return inf(sign);
+	string strExp = toStrBias(e);
+	//Lay phan tri
+	string s1, s2;
+	s1 = '1' + this->getSigni();
+	s2 = '1' + other.getSigni();
+
+	string strSigni = productQfloat(s1, s2);
+	string result = strSign + strExp + strSigni;
 	return result;
 }
 
