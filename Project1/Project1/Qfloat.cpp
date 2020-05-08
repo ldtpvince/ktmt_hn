@@ -177,7 +177,7 @@ Qfloat strDecToQfloat(string s) {
 		QInt temp;
 		istringstream istr(Int);
 		ScanQInt(istr, temp, 10);
-		string binInt = DecToBin(temp);
+		string binInt = QInt::DecToBin(temp);
 		//Lay exp va khoi tao strSigni neu phan nguyen chuyen sang phan tri
 		int exp = binInt.length() - 1;
 		if (exp > 0)
@@ -240,7 +240,7 @@ string Qfloat::getSigni() const {
 	string result;
 	for (int i = BIT_SIGN - 1; i >= 0; i--) {
 		char bit = this->getBit(i) + '0';
-		result = bit + result;
+		result = result + bit;
 	}
 	return result;
 }
@@ -534,26 +534,30 @@ Qfloat Qfloat::operator*(const Qfloat& other) {
 }
 
 string divideQFloat(string n, string d, int& exp) {
-	QInt dividend = BinToDec(n);
+	QInt dividend = BinToDec(n), remainder;
 	QInt divisor = BinToDec(d), zero;
 	string result;
 	int floatPointAnchor = -1;
+	string test;
 
-	for (int i = BIT_SIGN - 1; i >= 0; i--) {
+	for (int i = BIT_SIGN; i >= 0; i--) {
 		if (dividend == zero) {
 			break;
 		}
+		test = QInt::DecToBin(dividend);
 		if (dividend < divisor) {
 			result.push_back('0');
-			dividend = dividend << 1;
 			if (floatPointAnchor == -1) {
 				floatPointAnchor = i;
 			}
-			continue;
+			remainder = dividend;
+		}
+		else {
+			result.push_back('1');
+			remainder = dividend - divisor;
 		}
 
-		result.push_back('1');
-		dividend = dividend - divisor;
+		dividend = remainder << 1;
 	}
 
 	// chuan hoa ket qua
@@ -579,7 +583,7 @@ string divideQFloat(string n, string d, int& exp) {
 	}
 
 	// xoa cac bit phia truoc
-	result = result.substr(floatPointAnchor + 1);
+	result = result.substr(BIT_SIGN - floatPointAnchor);
 
 	return result;
 }

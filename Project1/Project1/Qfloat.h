@@ -20,7 +20,7 @@ public:
 	//*Cac ham khoi tao*----------------------------------------
 	Qfloat();
 	Qfloat(string s);
-protected:
+public:
 	//*Cac ham ho tro*------------------------------------------
 	//Kiem tra bang 0
 	bool isZero() const;

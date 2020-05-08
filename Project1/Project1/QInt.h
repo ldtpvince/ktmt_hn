@@ -22,7 +22,7 @@ public:
 	std::string toSignedNumber(bool& sign);
 
 	std::string QIntToStrDec();
-	friend std::string DecToBin(QInt x);
+	static std::string DecToBin(QInt x);
 	friend QInt BinToDec(std::string bits);
 	friend std::string BinToHex(std::string hex);
 	friend std::string DecToHex(QInt x);

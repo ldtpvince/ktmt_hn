@@ -220,7 +220,7 @@ QInt BinToDec(string bin) {
 }
 
 // Ham chuyen tu sothap phan QInt sang chuoi nhi phan
-string DecToBin(QInt x) {
+string QInt::DecToBin(QInt x) {
 	string result = {};
 
 	for (int i = 0; i < x.binLen; i++) {
@@ -238,7 +238,7 @@ string BinToHex(string hex) {
 
 // Ham chuyen tu so thap phan QInt sang chuoi thap luc phan
 string DecToHex(QInt x) {
-	string temp = DecToBin(x);
+	string temp = QInt::DecToBin(x);
 	return strHexToBin(temp);
 }
 
@@ -315,7 +315,7 @@ void PrintQInt(std::ostream& out, QInt x, int base) {
 
 	switch (base) {
 	case 2: {
-		out << DecToBin(x);
+		out << QInt::DecToBin(x);
 		break;
 	}
 	case 10: {
