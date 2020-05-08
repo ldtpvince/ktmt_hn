@@ -76,11 +76,15 @@ int editSigni(string s) {
 
 string toStrBias(int exp) {
 	exp = exp + MAX_EXP - 1;
-	string result;
-	for (int i = 0; i < BIT_EXP; i++)
-		result += ('0' + (exp >> i) & 1);
+	string result = {};
+	for (int i = 0; i < BIT_EXP; i++) {
+		int bit = (exp >> i) & 1;
+		char c = '0' + bit;
+		result = c + result;
+	}
 	return result;
 }
+
 
 //Chia chuoi so nguyen duong cho 2
 string strDecDiv2(string s) {
@@ -234,8 +238,10 @@ void Qfloat::setBit(int index, bool bit) {
 //Lay dau
 string Qfloat::getSigni() const {
 	string result;
-	for (int i = BIT_SIGN - 1; i >= 0; i++)
-		result += this->getBit(i);
+	for (int i = BIT_SIGN - 1; i >= 0; i--) {
+		char bit = this->getBit(i) + '0';
+		result = bit + result;
+	}
 	return result;
 }
 
@@ -457,6 +463,45 @@ Qfloat Qfloat::operator-(const Qfloat& other) {
 	return (*this) + temp;
 }
 
+// Tinh tich phan tri
+string productQfloat(string a, string b)
+{
+	// Lam day 128 bit cho phan tri
+	string sub(128 - BIT_SIGN - 1, '0');
+	a = sub + a, b = sub + b;
+	QInt Q = BinToDec(a), M = BinToDec(b);
+	//Nhan theo thuat toan Booth: 
+	QInt A;
+	bool P = 0; // Q_-1: Khoi tao gia tri ban dau la bit 0
+	for (int i = 0; i < QINT_SIZE * QINT_LENGTH; i++)
+	{
+		// Lay bit trai nhat cua Q
+		bool LSB_Q = QInt::getBit(Q.data[QINT_LENGTH - 1], QINT_SIZE - 1);
+
+		//TH1: Q_0 = 0, Q_-1 = 1 : A = A + M
+		if (P == true && LSB_Q == false)
+			A = plusQInt(A, M);
+		//TH2: Q_0 = 1, Q_-1 = 0 : A = A - M
+		else if (P == false && LSB_Q == true)
+			A = substractQInt(A, M);
+
+		//Dich bit
+		P = LSB_Q;
+		Q = Q >> 1;
+
+		// Dich bit trai nhat cua A sang Q
+		if (QInt::getBit(A.data[QINT_LENGTH - 1], QINT_SIZE - 1) == 1)
+			QInt::setBit1(Q.data[0], 0);
+		else
+			QInt::setBit0(Q.data[0], 0);
+		A = A >> 1;
+	}
+	// Tach lay phan tri gom BIT_SIGN + 1 bit
+	string result = DecTo128Bin(A) + DecTo128Bin(Q);
+	result = result.substr((128 - BIT_SIGN - 1) * 2, BIT_SIGN + 1);
+	return result;
+}
+
 Qfloat Qfloat::operator*(const Qfloat& other) {
 	Qfloat zero;
 	//Nhan voi 0
@@ -466,11 +511,13 @@ Qfloat Qfloat::operator*(const Qfloat& other) {
 	bool sign1, sign2, sign;
 	sign1 = this->getBit(MAX_N * BIT - 1);
 	sign2 = other.getBit(MAX_N * BIT - 1);
-	string strSign = (sign1 == sign2) ? '1' : '0';
+	sign = !(sign1 == sign2);
+	char strSign = (sign1 == sign2) ? '1' : '0';
 	//Lay gia tri mu
 	int e1, e2, e;
 	e1 = this->getExp();
 	e2 = other.getExp();
+	e = e1 + e2;
 	if (e < MIN_EXP)
 		return zero;
 	if (e > MAX_EXP)
@@ -483,10 +530,103 @@ Qfloat Qfloat::operator*(const Qfloat& other) {
 
 	string strSigni = productQfloat(s1, s2);
 	string result = strSign + strExp + strSigni;
+	return BinToDec(result);
+}
+
+string divideQFloat(string n, string d, int& exp) {
+	QInt dividend = BinToDec(n);
+	QInt divisor = BinToDec(d), zero;
+	string result;
+	int floatPointAnchor = -1;
+
+	for (int i = BIT_SIGN - 1; i >= 0; i--) {
+		if (dividend == zero) {
+			break;
+		}
+		if (dividend < divisor) {
+			result.push_back('0');
+			dividend = dividend << 1;
+			if (floatPointAnchor == -1) {
+				floatPointAnchor = i;
+			}
+			continue;
+		}
+
+		result.push_back('1');
+		dividend = dividend - divisor;
+	}
+
+	// chuan hoa ket qua
+	if (dividend == zero) {
+		for (int i = 0; i < result.length(); i++) {
+			if (result[i] == '1') {
+				floatPointAnchor = result.length() - 1 - i;
+				exp += floatPointAnchor + 1;
+				break;
+			}
+		}
+	}
+
+	if (floatPointAnchor == BIT_SIGN) {
+		for (int i = floatPointAnchor; i >= 0; i--) {
+			if (result[i] == '1') {
+				floatPointAnchor = i;
+				break;
+			}
+		}
+
+		exp -= BIT_SIGN - floatPointAnchor;
+	}
+
+	// xoa cac bit phia truoc
+	result = result.substr(floatPointAnchor + 1);
+
 	return result;
 }
 
 Qfloat Qfloat::operator/(const Qfloat& other) {
 	Qfloat result;
+	// chia cho 0
+	if (other.isZero()) {
+		for (int i = 0; i < BIT_EXP; i++) {
+			result.setBit(i + BIT_SIGN, 1);
+		}
+		return result;
+	}
+	// so chia la 0
+	if (this->isZero()) {
+		return result;
+	}
+
+	// lay dau
+	bool sign1, sign2, sign;
+	sign1 = this->getBit(MAX_N * BIT - 1);
+	sign2 = other.getBit(MAX_N * BIT - 1);
+	sign = !(sign1 == sign2);
+	char strSign = (sign1 == sign2) ? '0' : '1';
+
+	// lay mu
+	int exp, exp1, exp2;
+	exp1 = this->getExp();
+	exp2 = other.getExp();
+	exp = exp1 - exp2;
+	
+	//lay phan tri
+	string signi1, signi2;
+	signi1 = '1' + this->getSigni();
+	signi2 = '1' + other.getSigni();
+	
+	// thuc hien phep chia va chuan hoa ket qua
+	string strSigni = divideQFloat(signi1, signi2, exp);
+
+	if (exp < MIN_EXP)
+		return result;
+	if (exp > MAX_EXP)
+		return inf(sign);
+	string strExp = toStrBias(exp);
+
+	string strResult = strSign + strExp + strSigni;
+	result = BinToDec(strResult);
 	return result;
 }
+

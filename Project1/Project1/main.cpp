@@ -1,18 +1,12 @@
 #include <iostream>
-//#include "Qfloat.h"
+#include "Qfloat.h"
 #include "QInt.h"
 
 using namespace std;
 
 int main(){
-	QInt x = 12;
-	/*ScanQInt(cin, x, 10);
-	ScanQInt(cin, y, 10);
-	q = x.divide(y, r);*/
-	QInt y("-3");
-	bool sign;
-	cout << y.toSignedNumber(sign);
-	/*int i = 10;
-	cout << ((i << 28) & (1 << 31));*/
+	Qfloat x("12.4"), y("1.2"), z;
+	z = x / y;
+	Qfloat::PrintQfloat(z, 10);
 	return 0;
 }

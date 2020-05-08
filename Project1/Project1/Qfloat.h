@@ -59,3 +59,5 @@ public:
 	Qfloat operator/(const Qfloat&);
 };
 
+string toStrBias(int exp);
+std::string productQfloat(std::string a, std::string b);
