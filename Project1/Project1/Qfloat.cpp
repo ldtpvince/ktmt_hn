@@ -150,7 +150,7 @@ Qfloat strDecToQfloat(string s) {
 		return result;
 	//Xet dau
 	if (s[0] == '-') {
-		result.setBit(MAX_N * BIT - 1, '1');
+		result.setBit(LEN - 1, 1);
 		s.erase(0, 1);
 	}
 	//Xet chuoi nguyen
