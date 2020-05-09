@@ -304,7 +304,7 @@ string toStrDec(Qfloat x) {
 			else
 				return "NaN";
 		}
-	unsigned int exp = stoi(strExp, nullptr, 2);
+	int exp = stoi(strExp, nullptr, 2);
 	exp -= bias;
 
 	//Tim phan nguyen, thap phan o he nhi phan
