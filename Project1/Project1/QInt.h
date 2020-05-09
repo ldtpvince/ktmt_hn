@@ -82,7 +82,7 @@ public:
 	friend QInt substractQInt(const QInt & x, const QInt & y);
 
 	// Nhan phan tri cua Qfloat
-	friend std::string productQfloat(std::string a, std::string b);
+	friend std::string productQfloat(std::string a, std::string b, int& exp);
 };
 
 QInt BinToDec(std::string bin);

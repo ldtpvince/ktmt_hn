@@ -60,4 +60,4 @@ public:
 };
 
 string toStrBias(int exp);
-std::string productQfloat(std::string a, std::string b);
+std::string productQfloat(std::string a, std::string b, int& exp);

@@ -464,11 +464,11 @@ Qfloat Qfloat::operator-(const Qfloat& other) {
 }
 
 // Tinh tich phan tri
-string productQfloat(string a, string b)
+string productQfloat(string a, string b, int& exp)
 {
 	// Lam day 128 bit cho phan tri
-	string sub(128 - BIT_SIGN - 1, '0');
-	a = sub + a, b = sub + b;
+	/*string sub(128 - BIT_SIGN - 1, '0');
+	a = sub + a, b = sub + b;*/
 	QInt Q = BinToDec(a), M = BinToDec(b);
 	//Nhan theo thuat toan Booth: 
 	QInt A;
@@ -496,9 +496,18 @@ string productQfloat(string a, string b)
 			QInt::setBit0(Q.data[0], 0);
 		A = A >> 1;
 	}
+
+	// Tinh lai phan mu
+	if ((A.binLen + 128) == ((BIT_SIGN + 1) * 2)) {
+		exp++;
+	}
+
 	// Tach lay phan tri gom BIT_SIGN + 1 bit
 	string result = DecTo128Bin(A) + DecTo128Bin(Q);
-	result = result.substr((128 - BIT_SIGN - 1) * 2, BIT_SIGN + 1);
+	result = result.substr((128 - BIT_SIGN - 1) * 2, BIT_SIGN);
+
+	// Tach bo so 1 giu phan tri
+	result.erase(result.begin());
 	return result;
 }
 
@@ -512,23 +521,28 @@ Qfloat Qfloat::operator*(const Qfloat& other) {
 	sign1 = this->getBit(MAX_N * BIT - 1);
 	sign2 = other.getBit(MAX_N * BIT - 1);
 	sign = !(sign1 == sign2);
-	char strSign = (sign1 == sign2) ? '1' : '0';
+	char strSign = (sign1 == sign2) ? '0' : '1';
 	//Lay gia tri mu
 	int e1, e2, e;
 	e1 = this->getExp();
 	e2 = other.getExp();
 	e = e1 + e2;
-	if (e < MIN_EXP)
-		return zero;
-	if (e > MAX_EXP)
-		return inf(sign);
-	string strExp = toStrBias(e);
+	
 	//Lay phan tri
 	string s1, s2;
 	s1 = '1' + this->getSigni();
 	s2 = '1' + other.getSigni();
 
-	string strSigni = productQfloat(s1, s2);
+	string strSigni = productQfloat(s1, s2, e);
+
+	// Kiem tra lai phan mu
+	if (e < MIN_EXP)
+		return zero;
+	if (e > MAX_EXP)
+		return inf(sign);
+	string strExp = toStrBias(e);
+
+
 	string result = strSign + strExp + strSigni;
 	return BinToDec(result);
 }
@@ -542,13 +556,14 @@ string divideQFloat(string n, string d, int& exp) {
 
 	for (int i = BIT_SIGN; i >= 0; i--) {
 		if (dividend == zero) {
-			break;
+			result.push_back('0');
+			continue;
 		}
 		test = QInt::DecToBin(dividend);
 		if (dividend < divisor) {
 			result.push_back('0');
 			if (floatPointAnchor == -1) {
-				floatPointAnchor = i;
+				floatPointAnchor = i + 1;
 			}
 			remainder = dividend;
 		}
@@ -565,13 +580,12 @@ string divideQFloat(string n, string d, int& exp) {
 		for (int i = 0; i < result.length(); i++) {
 			if (result[i] == '1') {
 				floatPointAnchor = result.length() - 1 - i;
-				exp += floatPointAnchor + 1;
+				exp += BIT_SIGN - floatPointAnchor;
 				break;
 			}
 		}
 	}
-
-	if (floatPointAnchor == BIT_SIGN) {
+	else  if (floatPointAnchor == BIT_SIGN) {
 		for (int i = floatPointAnchor; i >= 0; i--) {
 			if (result[i] == '1') {
 				floatPointAnchor = i;
@@ -583,7 +597,7 @@ string divideQFloat(string n, string d, int& exp) {
 	}
 
 	// xoa cac bit phia truoc
-	result = result.substr(BIT_SIGN - floatPointAnchor);
+	result = result.substr(BIT_SIGN + 1 - floatPointAnchor);
 
 	return result;
 }
