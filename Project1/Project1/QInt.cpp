@@ -204,7 +204,7 @@ QInt BinToDec(string bin) {
 
 	for (int i = bin.size() - 1 ; i  >= 0; i--) {
 		if (bin[i] == '1') {
-			QInt::setBit1(result.data[3 - (bin.size() - i - 1) / 32], 31 - bin.size() + 1 + i);
+			result.setBitAt(bin.size() - 1 - i, true);
 		}
 	}
 	

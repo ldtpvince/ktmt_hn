@@ -6,6 +6,7 @@ using namespace std;
 
 int main(){
 	QInt x;
-	ScanQInt(cin, x, 16);
+	x = BinToDec("1010");
+	PrintQInt(cout, x, 10);
 	return 0;
 }	
