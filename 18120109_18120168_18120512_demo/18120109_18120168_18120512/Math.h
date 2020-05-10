@@ -12,14 +12,13 @@ public:
 	Math();
 
 	//Xu li bieu thuc chuoi va tra ve ket qua cua no
-	std::string doMath(std::string toProcess);
+	std::string doMath(std::string toProcess, int mode);
 
 	//Xac dinh tinh dung sai cua du lieu
 	std::string validate(std::string toProcess);
 
-	//Tinh toan ket qua khi du lieu da hop le
-	std::string calculate(std::string toProcess);
-
+	//Ham su dung de chuyen he tu mode1 sang mode2
+	std::string changeNumeral(std::string toProcess, int mode1, int mode2);
 	private:
 
 		//Moi phan tu giu chuoi 2 toan tu khong hop le ket hop voi nhau

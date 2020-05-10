@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Game.h"
 #include <iostream>
 
@@ -140,8 +139,48 @@ void Game::updateStuff()
 	for (int i = 0; i < this->numeralSystems.size(); i++)
 	{
 		numeralSystems[i].update(sf::Mouse::getPosition(this->window));
+		if (numeralSystems[i].isPressedButton())
+		{
+			if (i == 0)
+			{
+				if (screen.getText() != ""&& is_number(screen.getText()))
+				{
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 10));
+				}
+				MODE = 10;
+			}
+			else if (i == 1)
+			{
+				if (screen.getText() != ""&& is_number(screen.getText()))
+				{
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 2));
+				}
+				MODE = 2;
+			}
+			else
+			{
+				if (screen.getText() != ""&& is_number(screen.getText()))
+				{
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 16));
+				}
+				MODE = 16;
+			}
+		}
 	}
 
+	//Hien thi Button he dem duoc chon
+	if (MODE == 2) //He nhi phan
+	{
+		numeralSystems[1].pressedButton(); 
+	}
+	else if (MODE == 10) //He thap phan
+	{
+		numeralSystems[0].pressedButton();
+	}
+	else //He thap luc phan
+	{
+		numeralSystems[2].pressedButton();
+	}
 	//Cap nhat man hinh may tinh
 	this->screen.update(sf::Mouse::getPosition(this->window));
 }
@@ -334,7 +373,7 @@ void Game::initNumeralSystem()
 	for (int i = 0; i < numeralAmount; i++)
 	{
 		this->numeralSystems.push_back(Button(
-			numeralSize, sf::Vector2f(xPos, yPos), numeralValues[i], "",
+			numeralSize, sf::Vector2f(xPos, yPos), "", "",
 			numeralTextures[i].getIdle(), numeralTextures[i].getHover(), numeralTextures[i].getPressed(),
 			sf::Color::Black, 30, this->font));
 
@@ -370,7 +409,7 @@ void Game::screenProcessor(std::string toAdd)
 		//Kiem tra va tinh toan sau do xuat ra man hinh
 		if (this->screen.getText().length() > 0)
 		{
-			this->screen.setText(this->checker.doMath(this->screen.getText()));
+			this->screen.setText(this->checker.doMath(this->screen.getText(), MODE));
 		}
 
 	}
@@ -520,4 +559,12 @@ std::string Game::keyboardInput()
 	}
 	counter += 0.03;
 	return answer;
+}
+
+bool is_number(const std::string& s)
+{
+	for (int i = 0; i < s.length(); i++)
+		if (!((s[i] >= '0'&&s[i] <= '9') || (s[i] >= 'A'&&s[i] <= 'F')))
+			return false;
+	return true;
 }

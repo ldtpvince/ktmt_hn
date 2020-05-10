@@ -22,6 +22,10 @@ public:
 	//Cap nhat trang thai cua button dua tren hanh dong cua nguoi dung: Click, hover or Ignore 
 	void update(sf::Vector2i mousePos);
 
+	//Cap nhat trang thai duoc chon
+	void pressedButton();
+	bool isPressedButton();
+
 	//Tra ve gia tri cua button khi nguoi dung chon
 	std::string returnValue();
 

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Button.h"
 #include <iostream>
 
@@ -85,6 +84,17 @@ void Button::update(sf::Vector2i mousePos)
 		this->body.setFillColor(sf::Color::Red);
 		break;
 	}
+}
+
+void Button::pressedButton()
+{
+	this->buttonState = PRESSED;
+	this->body.setTexture(pressedTexture);
+}
+
+bool Button::isPressedButton()
+{
+	return (buttonState == PRESSED);
 }
 
 //Tra ve gia tri cua Button khi nguoi dung chon Button

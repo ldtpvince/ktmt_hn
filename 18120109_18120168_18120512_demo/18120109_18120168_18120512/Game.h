@@ -53,6 +53,8 @@ private:
 	// Ket cau cua Button he dem
 	std::vector <ButtonTexture> numeralTextures;
 
+	int MODE = 10; //He co so 10 ban dau
+
 	//Quan ly thoi gian nhap tu ban phim
 	double counter;
 
@@ -60,3 +62,5 @@ private:
 	Math checker;
 };
 
+//Ham kiem tra chuoi khong chua toan tu de chuyen he dem
+bool is_number(const std::string& s);

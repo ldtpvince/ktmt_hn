@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ButtonTexture.h"
 #include <iostream>
 

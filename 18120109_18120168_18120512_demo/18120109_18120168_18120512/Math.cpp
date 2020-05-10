@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "Math.h"
+#include "QInt.h"
+#include "Qfloat.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -26,8 +27,41 @@ Math::Math()
 
 }
 
+Qfloat calcQfloat_clone(Qfloat a, Qfloat b, char sign) {
+	switch (sign) {
+	case '+':
+		return a + b;
+	case '-':
+		return a - b;
+	case '*':
+		return a * b;
+	case '/':
+		return a / b;
+	}
+}
+
+//Toan tu 1 ki tu
+QInt calcQInt_clone(QInt a, QInt b, char sign) {
+	switch (sign) {
+	case '+':
+		return a + b;
+	case '-':
+		return a - b;
+	case '*':
+		return a * b;
+	case '/':
+		return a / b;
+	case '&':
+		return a & b;
+	case '|':
+		return a | b;
+	case '^':
+		return a ^ b;
+	}
+}
+
 //Xu ly bieu thuc chuoi va tra ve ket qua cho chuoi do
-std::string Math::doMath(std::string toProcess)
+std::string Math::doMath(std::string toProcess, int mode)
 {
 	std::string answer = toProcess;
 
@@ -37,7 +71,106 @@ std::string Math::doMath(std::string toProcess)
 	//Tinh toan khi chuoi bieu thuc hop le
 	if (answer != "ERROR")
 	{
-		answer = this->calculate(answer);
+		//Kiem tra bieu thuc co chua so phan phan
+		int dot = toProcess.find('.');
+		if (dot != std::string::npos) //So thap phan
+		{
+			char opera[] = { '+', '-', '*', '/' };
+			std::string a, b;
+			char calc;
+			int i = 0;
+			for (; i < toProcess.length(); i++)
+			{
+				//Checking Every Element in the String to see if its an Operator 
+				for (int j = 0; j < sizeof(opera) / sizeof(char); j++)
+				{
+					if (toProcess[i] == opera[j])
+					{
+						//Tim thay so hang
+						a = toProcess.substr(0, i);
+						b = toProcess.substr(i + 1);
+						calc = opera[j];
+
+						break;
+					}
+				}
+			}
+
+			Qfloat operand1, operand2;
+			Qfloat::ScanQfloat(operand1, a, mode);
+			Qfloat::ScanQfloat(operand2, b, mode);
+
+			Qfloat result = calcQfloat_clone(operand1, operand2, calc);
+			answer = Qfloat::PrintQfloat(result, mode);
+		}
+		else //QInt
+		{
+			QInt result;
+			std::string a, b;
+			if (toProcess[0] == '~')
+			{
+				a = toProcess.substr(1);
+				QInt operand(changeNumeral(toProcess, mode, 10));
+
+				result = operand;
+			}
+			// Xu ly dich bit
+			//Dich trai: <<
+			if (toProcess.find('<') != std::string::npos)
+			{
+				int pos = toProcess.find('<');
+				a = toProcess.substr(0, pos);
+				b = toProcess.substr(pos + 2);
+				QInt operand(changeNumeral(a, mode, 10));
+				int ind = std::stoi(b);
+				
+				result = operand << ind;
+			}
+			//Dich phai: >>
+			else if (toProcess.find('>') != std::string::npos)
+			{
+				int pos = toProcess.find('>');
+				a = toProcess.substr(0, pos);
+				b = toProcess.substr(pos + 2);
+				QInt operand(changeNumeral(a, mode, 10));
+				int ind = std::stoi(b);
+
+				result = operand >> ind;
+			}
+			else
+			{
+				char opera[] = { '+', '-', '*', '/', '&', '|', '^', '|' };
+				char calc;
+				int i = 0;
+				for (; i < toProcess.length(); i++)
+				{
+					//Checking Every Element in the String to see if its an Operator 
+					for (int j = 0; j < sizeof(opera) / sizeof(char); j++)
+					{
+						if (toProcess[i] == opera[j])
+						{
+							//Tim thay so hang
+							a = toProcess.substr(0, i);
+							b = toProcess.substr(i + 1);
+							calc = opera[j];
+
+							break;
+						}
+					}
+				}
+
+				QInt operand1(changeNumeral(a, mode, 10)), operand2(changeNumeral(b, mode, 10));
+
+				result = calcQInt_clone(operand1, operand2, calc);
+
+				//Xac dinh phep chia 0
+				if (calc = '/'&& operand2 == QInt::zero())
+					answer = "ERROR";
+			}
+
+			if (answer != "ERROR")
+				answer = result.QIntToStrDec();
+		}
 	}
 
 	return answer;
@@ -106,71 +239,31 @@ std::string Math::validate(std::string toProcess)
 	return answer;
 }
 
-//Thuc hien tinh toan khi bieu thuc chuoi hop le
-std::string Math::calculate(std::string toProcess)
+//Ham su dung de chuyen he tu mode1 sang mode2
+std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
 {
-	std::string holder = toProcess; //Saving the OG Answer
-	holder += "F";			//Them ky hieu "F" la ket thuc bieu thuc
-
-	//Cac toan tu co the co cua bieu thuc
-	char possibleOper[] = { '+','-', '*', '/', '&', '|', '^', '~','F' };
-
-	//Giu cac so hang cua chuoi
-	std::vector<std::string> nums;
-	
-	//Giu cac toan tu cua chuoi
-	std::vector<std::string> operators;
-
-	int lastPos = 0; //Vi tri bat dau cua so hang cuoi cung cua chuoi
-
-	//Lay ra so hang va toan tu
-	for (int i = 0; i < holder.length(); i++)
+	std::string answer = toProcess;
+	if (mode1 == 10)
 	{
-		//Checking Every Element in the String to see if its an Operator 
-		for (int j = 0; j < sizeof(possibleOper) / sizeof(char); j++)
+		if (mode2 == 2)
+			answer = strDecToBin(toProcess);
+		/*else if (mode2 == 16)
 		{
-			if (holder[i] == possibleOper[j])
-			{
-				//Tim thay so hang
-				nums.push_back(toProcess.substr(lastPos, i - lastPos));
-
-				//Tim thay toan tu 
-				operators.push_back(std::string(1,possibleOper[j]));
-				lastPos = i + 1;
-			}
-		}
+			std::string temp = strDecToBin(toProcess);
+			answer = BinToHex(temp);
+		}*/
 	}
-
-	//Go ky hieu "F" cuoi cung
-	operators.erase(operators.begin() + operators.size() - 1);
-
-	//Tinh toan
-	double answer = std::stod(nums[0]);//Holds the Answer in a double format 
-
-	for (int i = 0; i < operators.size(); i++)
+	else if (mode1 == 2)
 	{
-		if (operators[i] == "+")
+		if (mode2 == 10)
 		{
-			answer += std::stod(nums[i + 1]);
+			QInt temp = BinToDec(toProcess);
+			answer = temp.QIntToStrDec();
 		}
-		else if (operators[i] == "-")
-		{
-			answer -= std::stod(nums[i + 1]);
-		}
-		else if (operators[i] == "x")
-		{
-			answer *= std::stod(nums[i + 1]);
-		}
-		else if (operators[i] == "/")
-		{
-			answer /= std::stod(nums[i + 1]);
-		}
+		else if (mode2 == 16);
+			//answer = BinToHex(toProcess);
 	}
-	
-	std::stringstream s;
+	else; //He thap luc
 
-	s << std::setprecision(6) << answer;
-
-
-	return s.str(); 
+	return answer;
 }
