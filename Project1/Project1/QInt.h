@@ -88,4 +88,5 @@ public:
 QInt BinToDec(std::string bin);
 std::string strDecToBin(std::string dec);
 std::string BinToHex(std::string bin);
+std::string strHexToBin(std::string hex);
 

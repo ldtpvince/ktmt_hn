@@ -172,7 +172,7 @@ string strDecToBin(string dec) {
 				continue;
 			}
 			if (first1Bit) {
-				result[i] = ~((result[i] - '0') | 0) + '0';
+				result[i] = (result[i] == '0') ? '1' : '0';
 			}
 		}
 		for (int i = 128 - result.size(); i > 0; i--) {

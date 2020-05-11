@@ -141,7 +141,7 @@ string fill0ToBin(string bin) {
 	string result = bin;
 	int remainBit = ((bin.size() / 4) + 1) * 4 - bin.size();
 	for (int i = 0; i < remainBit; i++) {
-		result.insert(bin.begin(), '0');
+		result.insert(result.begin(), '0');
 	}
 	return result;
 }
@@ -172,7 +172,7 @@ string strDecToBin(string dec) {
 				continue;
 			}
 			if (first1Bit) {
-				result[i] = ~((result[i] - '0') | 0) + '0';
+				result[i] = (result[i] == '0') ? '1' : '0';
 			}
 		}
 		for (int i = 128 - result.size(); i > 0; i--) {
@@ -204,7 +204,7 @@ QInt BinToDec(string bin) {
 
 	for (int i = bin.size() - 1 ; i  >= 0; i--) {
 		if (bin[i] == '1') {
-			QInt::setBit1(result.data[3 - (bin.size() - i - 1) / 32], 31 - bin.size() + 1 + i);
+			result.setBitAt(bin.size() - 1 - i, true);
 		}
 	}
 	
@@ -232,14 +232,32 @@ string QInt::DecToBin(QInt x) {
 }
 
 // Ham chuyen tu chuoi thap luc phan sang chuoi nhi phan
-string BinToHex(string hex) {
-	return strHexToBin(hex);
+string BinToHex(string bin) {
+	string result;
+	if (bin.size() % 4 != 0) {
+		bin = fill0ToBin(bin);
+	}
+	
+	for (int i = 0; i < bin.size(); i += 4) {
+		int nibbleVal = (bin[i] - '0') * 8 + (bin[i + 1] - '0') * 4 + (bin[i + 2] - '0') * 2 + bin[i + 3] - '0';
+		
+		if (nibbleVal < 10) {
+			char c = nibbleVal + '0';
+			result = result + c;
+		}
+		else {
+			char c = nibbleVal - 10 + 'A';
+			result = result + c;
+		}
+	}
+	
+	return result;
 }
 
 // Ham chuyen tu so thap phan QInt sang chuoi thap luc phan
 string DecToHex(QInt x) {
-	string temp = QInt::DecToBin(x);
-	return strHexToBin(temp);
+	string bin = QInt::DecToBin(x);
+	return BinToHex(bin);
 }
 
 string QInt::QIntToStrDec() {
