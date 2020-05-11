@@ -9,8 +9,8 @@ using namespace std;
 #define BIT_EXP		15
 #define BIT_SIGN	112
 #define BIAS		(1 << (BIT_EXP - 1)) - 1
-#define MAX_EXP		(1 << (BIT_EXP - 1))
-#define MIN_EXP		- (1 << (BIT_EXP - 1)) + 1
+#define MAX_EXP		BIAS + 1
+#define MIN_EXP		- (BIAS)
 
 class Qfloat
 {

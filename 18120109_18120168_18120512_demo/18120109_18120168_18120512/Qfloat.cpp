@@ -18,62 +18,6 @@ bool checkStr(string s, char c) {
 	return true;
 }
 
-//Dich chuyen sang phai
-string shrSigni(string s, int val) {
-	for (int i = 0; i < val; i++)
-		s = '0' + s;
-	return s;
-}
-
-//Dich chuyen sang trai
-string shlSigni(string s, int val) {
-	for (int i = 0; i < val; i++)
-		if (s.length() > 0)
-			s.erase(0, 1);
-	return s;
-}
-
-//Chuyen sang QInt
-QInt toQInt(string s, bool sign) {
-	QInt result;
-	QInt zero;
-	result = BinToDec(s);
-	if (sign)
-		result = zero - result;
-	return 0;
-}
-
-//Cong phan tri
-string addSigni(string a, string b, bool sign_a, bool sign_b, bool& sign) {
-	QInt signi1, signi2, sum;
-	string result;
-	signi1 = toQInt(a, sign_a);
-	signi2 = toQInt(b, sign_b);
-	sum = signi1 + signi2;
-	//result = sum.toSignedNumber(sign);
-	return result;
-}
-
-//Chinh sua phan tri: do dai 128 bit, khong tran so
-int editSigni(string s) {
-	int result = 0;
-	if (s[0] == '1') {
-		s = shrSigni(s, 1);
-		result++;
-		s.erase(0, 1);
-	}
-	else {
-		s.erase(0, 1);
-		while (s[0] == '0') {
-			s.erase(0, 1);
-			result--;
-		}
-	}
-	while (s.length() > BIT_SIGN)
-		s.erase(s.length() - 1, 1);
-	return result;
-}
-
 string toStrBias(int exp) {
 	exp = exp + MAX_EXP - 1;
 	string result = {};
@@ -84,7 +28,6 @@ string toStrBias(int exp) {
 	}
 	return result;
 }
-
 
 //Chia chuoi so nguyen duong cho 2
 string strDecDiv2(string s) {
@@ -304,7 +247,7 @@ string toStrDec(Qfloat x) {
 			else
 				return "NaN";
 		}
-	unsigned int exp = stoi(strExp, nullptr, 2);
+	int exp = stoi(strExp, nullptr, 2);
 	exp -= bias;
 
 	//Tim phan nguyen, thap phan o he nhi phan
@@ -346,6 +289,86 @@ string toStrDec(Qfloat x) {
 	}
 	result = result + Int + Frac;
 	return result;
+}
+
+//Cong 2 string sau thap phan
+string addStr(string a, string b, bool& temp) {
+	string result;
+	//Do dai 2 chuoi
+	int n = a.length();
+	temp = 0;
+	for (int i = n - 1; i >= 0; i--) {
+		int sum = a[i] + b[i] - '0' * 2 + temp;
+		char c;
+		switch (sum)
+		{
+		case 0:
+			c = '0';
+			break;
+		case 1:
+			c = '1';
+			temp = 0;
+			break;
+		case 2:
+			c = '0';
+			temp = 1;
+			break;
+		case 3:
+			c = '1';
+			temp = 1;
+			break;
+		}
+		result = c + result;
+	}
+	return result;
+}
+
+//Tru 2 string sau thap phan voi a >= b
+string subStr(string a, string b) {
+	string result;
+	int temp = 0;
+	int n = a.length();
+	for (int i = n - 1; i >= 0; i--) {
+		int sub = a[i] - b[i] + temp;
+		char c;
+		switch (sub)
+		{
+		case -2:
+			c = '0';
+			temp = -1;
+			break;
+		case -1:
+			c = '1';
+			temp = -1;
+			break;
+		case 0:
+			c = '0';
+			temp = 0;
+			break;
+		case 1:
+			c = '1';
+			temp = 0;
+			break;
+		}
+		result = c + result;
+	}
+	return result;
+}
+
+int compareStr(string a, string b) {
+	int i = 0;
+	while (i < a.length()) {
+		if (a[i] == b[i])
+			i++;
+		else
+			break;
+	}
+	if (i == a.length())
+		return 0;
+	if (a[i] > b[i])
+		return 1;
+	else
+		return -1;
 }
 
 //Khoi tao tu chuoi so thuc
@@ -393,7 +416,7 @@ string Qfloat::DecToBin(Qfloat x) {
 }
 
 //Toan tu gan: Qfloat = string
-Qfloat& Qfloat::operator =(string s) {
+Qfloat& Qfloat::operator=(string s) {
 	Qfloat res = s;
 	(*this) = res;
 	return (*this);
@@ -406,6 +429,7 @@ Qfloat& Qfloat::operator=(const Qfloat& other) {
 }
 
 Qfloat Qfloat::operator+(const Qfloat& other) {
+	Qfloat zero;
 	//Xet 1 so bang 0
 	if (this->isZero())
 		return other;
@@ -415,51 +439,103 @@ Qfloat Qfloat::operator+(const Qfloat& other) {
 	int e1, e2, e;
 	e1 = this->getExp();
 	e2 = other.getExp();
-	//Lay phan tri
-	string s1, s2;
-	s1 = '1' + this->getSigni();
-	s2 = '1' + other.getSigni();
-	//So sanh mu
-	int dist = e1 - e2;
-	if (dist < 0) {
-		s1 = shrSigni(s1, -dist);
-		e = e2;
+	string strSigni1 = this->getSigni();
+	string strSigni2 = other.getSigni();
+	//Xac dinh dang chuan hoac khong chuan
+	if (e1 == MIN_EXP)
+		strSigni1 = '0' + strSigni1;
+	else
+		strSigni1 = '1' + strSigni1;
+	strSigni1.erase(BIT_SIGN, 1);
+	e1 += 1;
+	if (e2 == MIN_EXP)
+		strSigni2 = '0' + strSigni2;
+	else
+		strSigni2 = '1' + strSigni2;
+	strSigni2.erase(BIT_SIGN, 1);
+	e2 += 1;
+	//Can bang e1, e2
+	while (e1 < e2) {
+		strSigni1 = '0' + strSigni1;
+		strSigni1.erase(BIT_SIGN, 1);
+		e1++;
+		if (checkStr(strSigni1, '0'))
+			return other;
+	}
+	while (e1 > e2) {
+		strSigni2 = '0' + strSigni2;
+		strSigni2.erase(BIT_SIGN, 1);
+		e2++;
+		if (checkStr(strSigni2, '0'))
+			return *this;
+	}
+	e = e1;
+	//Xac dinh dau
+	bool sign1, sign2, sign;
+	sign1 = this->getBit(LEN - 1);
+	sign2 = other.getBit(LEN - 1);
+	sign = 0;
+	string strSigni;
+	//Cong (cung dau) hoac tru (neu khac dau)
+	if (sign1 == sign2) {
+		bool temp = 0;
+		sign = sign1;
+		strSigni = addStr(strSigni1, strSigni2, temp);
+		if (temp) {
+			strSigni = '1' + strSigni;
+			e++;
+		}
 	}
 	else {
-		s2 = shrSigni(s1, dist);
-		e = e1;
+		int com = compareStr(strSigni1, strSigni2);
+		switch (com)
+		{
+		case 0:
+			return zero;
+			break;
+		case 1:
+			strSigni = subStr(strSigni1, strSigni2);
+			sign = sign1;
+			break;
+		case -1:
+			strSigni = subStr(strSigni2, strSigni1);
+			sign = sign2;
+			break;
+		}
 	}
-	//Lay dau
-	bool sign1, sign2, sign;
-	sign1 = this->getBit(MAX_N * BIT - 1);
-	sign2 = other.getBit(MAX_N * BIT - 1);
-	sign = 0;
-	string strSigni = addSigni(s1, s2, sign1, sign2, sign);
-	Qfloat zero;
 	if (checkStr(strSigni, '0'))
 		return zero;
-	int temp = editSigni(strSigni);
-	e += temp;
-	if (e < MIN_EXP)
+	//Dang chuan
+	while (strSigni[0] != '1') {
+		e--;
+		strSigni.erase(0, 1);
+		strSigni = strSigni + '0';
+	}
+	e--;
+	strSigni.erase(0, 1);
+	strSigni = strSigni + '0';
+	//Xet cac truong hop
+	if (e <= MIN_EXP)
 		return zero;
-	if (e > MAX_EXP)
+	if (e >= MAX_EXP)
 		return inf(sign);
+	//Tra ve ket qua
+	Qfloat result;
+	result.setBit(LEN - 1, sign);
 	string strExp = toStrBias(e);
-	char Sign;
-	if (sign)
-		Sign = '1';
-	else
-		Sign = '0';
-	string result = Sign + strExp + strSigni;
+	for (int i = 0; i < BIT_EXP; i++)
+		result.setBit(LEN - 2 - i, strExp[i] == '1');
+	for (int i = 0; i < BIT_SIGN; i++)
+		result.setBit(BIT_SIGN - 1 - i, strSigni[i] == '1');
 	return result;
 }
 
 Qfloat Qfloat::operator-(const Qfloat& other) {
 	Qfloat temp = other;
 	if (temp.getBit(0))
-		temp.setBit(0, 0);
+		temp.setBit(LEN - 1, 0);
 	else
-		temp.setBit(0, 1);
+		temp.setBit(LEN - 1, 1);
 	return (*this) + temp;
 }
 
