@@ -139,6 +139,11 @@ string charHexToDec(char hex) {
 // Ham lap day mot so nhi phan cho du bo cac 4 bit 
 string fill0ToBin(string bin) {
 	string result = bin;
+	
+	if (bin.size() % 4 == 0) {
+		return result;
+	}
+
 	int remainBit = ((bin.size() / 4) + 1) * 4 - bin.size();
 	for (int i = 0; i < remainBit; i++) {
 		result.insert(result.begin(), '0');

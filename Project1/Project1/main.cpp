@@ -6,10 +6,9 @@
 using namespace std;
 
 int main(){
-	stringstream str;
-	str << "-10000000000000000000000000000000";
-	QInt x;
-	ScanQInt(str, x, 10);
-	PrintQInt(cout, x, 10);
+	string str("2D");
+	str = strHexToBin(str);
+	QInt x = 10;
+	str = x.QIntToStrDec();
 	return 0;
 }	

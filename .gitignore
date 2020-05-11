@@ -1,0 +1,7 @@
+.vs/
+*.sln
+Project1/*.vcxproj
+Project1/*.filters
+Project1/*.user
+18120109_18120168_18120512_demo/.vs
+18120109_18120168_18120512_demo/SFML-2.5.1
