@@ -232,14 +232,32 @@ string QInt::DecToBin(QInt x) {
 }
 
 // Ham chuyen tu chuoi thap luc phan sang chuoi nhi phan
-string BinToHex(string hex) {
-	return strHexToBin(hex);
+string BinToHex(string bin) {
+	string result;
+	if (bin.size() % 4 != 0) {
+		bin = fill0ToBin(bin);
+	}
+	
+	for (int i = 0; i < bin.size(); i += 4) {
+		int nibbleVal = (bin[i] - '0') * 8 + (bin[i + 1] - '0') * 4 + (bin[i + 2] - '0') * 2 + bin[i + 3] - '0';
+		
+		if (nibbleVal < 10) {
+			char c = nibbleVal + '0';
+			result = result + c;
+		}
+		else {
+			char c = nibbleVal - 10 + 'A';
+			result = result + c;
+		}
+	}
+	
+	return result;
 }
 
 // Ham chuyen tu so thap phan QInt sang chuoi thap luc phan
 string DecToHex(QInt x) {
-	string temp = QInt::DecToBin(x);
-	return strHexToBin(temp);
+	string bin = QInt::DecToBin(x);
+	return BinToHex(bin);
 }
 
 string QInt::QIntToStrDec() {

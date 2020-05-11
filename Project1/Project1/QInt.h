@@ -24,7 +24,7 @@ public:
 	std::string QIntToStrDec();
 	static std::string DecToBin(QInt x);
 	friend QInt BinToDec(std::string bits);
-	friend std::string BinToHex(std::string hex);
+	friend std::string BinToHex(std::string bin);
 	friend std::string DecToHex(QInt x);
 	friend std::string DecTo128Bin(QInt x);
 
@@ -87,3 +87,5 @@ public:
 
 QInt BinToDec(std::string bin);
 std::string strDecToBin(std::string dec);
+std::string BinToHex(std::string bin);
+

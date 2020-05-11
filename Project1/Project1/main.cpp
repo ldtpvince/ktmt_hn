@@ -5,8 +5,7 @@
 using namespace std;
 
 int main(){
-	QInt x;
-	x = BinToDec("1010");
-	PrintQInt(cout, x, 10);
+	QInt x = 10;
+	string z = DecToHex(x);
 	return 0;
 }	
