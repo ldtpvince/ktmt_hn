@@ -19,7 +19,6 @@ public:
 
 	// Cac ham chuyen doi
 	int QIntBinSize();
-	std::string toSignedNumber(bool& sign);
 
 	std::string QIntToStrDec();
 	static std::string DecToBin(QInt x);

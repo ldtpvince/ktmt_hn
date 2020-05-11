@@ -282,32 +282,6 @@ string QInt::QIntToStrDec() {
 	return result;
 }
 
-string QInt::toSignedNumber(bool& sign) {
-	QInt temp = *this;
-	sign = getBitAt(QINT_SIZE * QINT_LENGTH - 1);
-
-	if (sign == 0) {
-		return DecTo128Bin(*this);
-	}
-	else {
-		bool first1Bit = false;
-		for (int i = 0; i < binLen; i++) {
-			bool bit = temp.getBitAt(i);
-			
-			if (!first1Bit) {
-				if (bit == 1) {
-					first1Bit = true;
-				}
-				continue;
-			}
-
-			temp.setBitAt(i, !bit);
-		}
-	}
-
-	return DecTo128Bin(temp);
-}
-
 // ------------------------------------------------------Ham scan----------------------------------------------------
 // Ham nhap mot chuoi so va luu vao QInt voi co so tuong ung
 void ScanQInt(istream& in, QInt& x, int base) {
