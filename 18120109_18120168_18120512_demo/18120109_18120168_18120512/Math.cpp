@@ -77,7 +77,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 		{
 			char opera[] = { '+', '-', '*', '/' };
 			std::string a, b;
-			char calc;
+			char calc = ' ';
 			int i = 0;
 			for (; i < toProcess.length(); i++)
 			{
@@ -96,12 +96,14 @@ std::string Math::doMath(std::string toProcess, int mode)
 				}
 			}
 
-			Qfloat operand1, operand2;
+			Qfloat operand1, operand2, result;
 			Qfloat::ScanQfloat(operand1, a, mode);
 			Qfloat::ScanQfloat(operand2, b, mode);
-
-			Qfloat result = calcQfloat_clone(operand1, operand2, calc);
-			answer = Qfloat::PrintQfloat(result, mode);
+			if (calc != ' ')
+			{
+				result = calcQfloat_clone(operand1, operand2, calc);
+				answer = Qfloat::PrintQfloat(result, mode);
+			}
 		}
 		else //QInt
 		{
@@ -125,6 +127,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 				int ind = std::stoi(b);
 				
 				result = operand << ind;
+				answer = result.QIntToStrDec();
 			}
 			//Dich phai: >>
 			else if (toProcess.find('>') != std::string::npos)
@@ -136,11 +139,12 @@ std::string Math::doMath(std::string toProcess, int mode)
 				int ind = std::stoi(b);
 
 				result = operand >> ind;
+				answer = result.QIntToStrDec();
 			}
 			else
 			{
 				char opera[] = { '+', '-', '*', '/', '&', '|', '^', '|' };
-				char calc;
+				char calc = ' ';
 				int i = 0;
 				for (; i < toProcess.length(); i++)
 				{
@@ -161,15 +165,17 @@ std::string Math::doMath(std::string toProcess, int mode)
 
 				QInt operand1(changeNumeral(a, mode, 10)), operand2(changeNumeral(b, mode, 10));
 
-				result = calcQInt_clone(operand1, operand2, calc);
+				if (calc != ' ')
+				{
+					result = calcQInt_clone(operand1, operand2, calc);
 
-				//Xac dinh phep chia 0
-				if (calc = '/'&& operand2 == QInt::zero())
-					answer = "ERROR";
+					//Xac dinh phep chia 0
+					if (calc = '/'&& operand2 == QInt::zero())
+						answer = "ERROR";
+					if (answer != "ERROR")
+						answer = result.QIntToStrDec();
+				}
 			}
-
-			if (answer != "ERROR")
-				answer = result.QIntToStrDec();
 		}
 	}
 
@@ -247,11 +253,11 @@ std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
 	{
 		if (mode2 == 2)
 			answer = strDecToBin(toProcess);
-		/*else if (mode2 == 16)
+		else if (mode2 == 16)
 		{
 			std::string temp = strDecToBin(toProcess);
 			answer = BinToHex(temp);
-		}*/
+		}
 	}
 	else if (mode1 == 2)
 	{
@@ -261,9 +267,19 @@ std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
 			answer = temp.QIntToStrDec();
 		}
 		else if (mode2 == 16);
-			//answer = BinToHex(toProcess);
+			answer = BinToHex(toProcess);
 	}
-	else; //He thap luc
-
+	else //He thap luc
+	{
+		if (mode2 == 10)
+		{
+			std::string temp = strHexToBin(toProcess);
+			//Chuyen tu he co so 2 sang co so 10
+			QInt res = BinToDec(temp);
+			answer = res.QIntToStrDec();
+		}
+		else if (mode2 == 2)
+			answer = strHexToBin(toProcess);
+	}
 	return answer;
 }

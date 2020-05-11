@@ -143,7 +143,7 @@ void Game::updateStuff()
 		{
 			if (i == 0)
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()))
+				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 10)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 10));
 				}
@@ -151,7 +151,7 @@ void Game::updateStuff()
 			}
 			else if (i == 1)
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()))
+				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 2)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 2));
 				}
@@ -159,7 +159,7 @@ void Game::updateStuff()
 			}
 			else
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()))
+				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 16)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 16));
 				}
@@ -284,7 +284,7 @@ void Game::initOperators()
 
 	//Cac toan tu: Bo sung << là "(", >> là ")", &, | là "@", ^, ~
 	std::string operValues[] = { "=", "+", "-", "x", "Div", ".", "(", ")", "&", "@", "^", "~", "Del", "AC" };
-	std::string operValuesText[] = { "=", "+", "- ","*", "/", ".", "<<", ">>", "&", "|", "^", "~" };
+	std::string operValuesText[] = { "=", "+", "-","*", "/", ".", "<<", ">>", "&", "|", "^", "~" };
 
 	int operAmount = sizeof(operValues) / sizeof(std::string);
 
