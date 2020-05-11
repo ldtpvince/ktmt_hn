@@ -19,10 +19,10 @@ public:
 
 	//Ham su dung de chuyen he tu mode1 sang mode2
 	std::string changeNumeral(std::string toProcess, int mode1, int mode2);
-	private:
+private:
 
-		//Moi phan tu giu chuoi 2 toan tu khong hop le ket hop voi nhau
-		std::vector<std::string> invalidOper; 
+	//Moi phan tu giu chuoi 2 toan tu khong hop le ket hop voi nhau
+	std::vector<std::string> invalidOper; 
 
-		std::string oper[5];
+	std::string oper[5];
 };

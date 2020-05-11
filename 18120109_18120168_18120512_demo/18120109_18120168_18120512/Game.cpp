@@ -117,7 +117,6 @@ void Game::drawStuff()
 
 	//Ve man hinh cua may tinh
 	this->screen.draw(&this->window);
-
 }
 
 //Cap nhat cac thanh phan cua may tinh 
@@ -235,7 +234,7 @@ void Game::initNumber()
 		sf::Texture* tempPressed = new sf::Texture();
 		tempIdle->loadFromFile("Sprites/#" + numsValue[i] + ".png");
 		tempHover->loadFromFile("Sprites/#" + numsValue[i] + " H.png");
-		tempPressed->loadFromFile("Sprites/#" + numsValue[i] + " P.png");
+		tempPressed->loadFromFile("Sprites/#" + numsValue[i] + " H.png");
 		numTextures.push_back(ButtonTexture(tempIdle,tempHover,tempPressed)); 
 	}
 
@@ -279,7 +278,6 @@ void Game::initNumber()
 //Khoi tao cac Button toan tu
 void Game::initOperators()
 {
-
 	sf::Vector2f operSize(58, 58);
 
 	//Cac toan tu: Bo sung << là "(", >> là ")", &, | là "@", ^, ~
@@ -297,7 +295,7 @@ void Game::initOperators()
 		
 		tempIdle->loadFromFile("Sprites/" + operValues[i] + ".png");
 		tempHover->loadFromFile("Sprites/" + operValues[i] + " H.png");
-		tempPressed->loadFromFile("Sprites/" + operValues[i] + " P.png");
+		tempPressed->loadFromFile("Sprites/" + operValues[i] + " H.png");
 
 		operTextures.push_back(ButtonTexture(tempIdle,tempHover,tempPressed));
 	}
@@ -346,7 +344,7 @@ void Game::initNumeralSystem()
 	sf::Vector2f numeralSize(112, 58);
 
 	//Cac he dem: DEC, BIN, HEX
-	std::string numeralValues[] = { "d ", "b ", "h "};
+	std::string numeralValues[] = { "d", "b", "h"};
 
 	int numeralAmount = sizeof(numeralValues) / sizeof(std::string);
 
@@ -359,7 +357,7 @@ void Game::initNumeralSystem()
 
 		tempIdle->loadFromFile("Sprites/" + numeralValues[i] + ".png");
 		tempHover->loadFromFile("Sprites/" + numeralValues[i] + " H.png");
-		tempPressed->loadFromFile("Sprites/" + numeralValues[i] + " P.png");
+		tempPressed->loadFromFile("Sprites/" + numeralValues[i] + " H.png");
 
 		numeralTextures.push_back(ButtonTexture(tempIdle, tempHover, tempPressed));
 	}
@@ -411,7 +409,6 @@ void Game::screenProcessor(std::string toAdd)
 		{
 			this->screen.setText(this->checker.doMath(this->screen.getText(), MODE));
 		}
-
 	}
 	else
 	{
@@ -423,6 +420,19 @@ void Game::screenProcessor(std::string toAdd)
 				this->screen.addText(toAdd);
 			}
 		}
+		/*else {
+			sf::Vector2f pos = this->screen.getTextPos();
+			pos.y += 5;
+			this->screen.setTextPos(pos);
+
+			if (this->screen.getText() != "ERROR")
+			{
+				this->screen.addText(toAdd);
+			}
+		}*/
+		/*else {
+			this->screen.addText("\n");
+		}*/
 	}
 }
 
