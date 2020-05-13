@@ -532,7 +532,7 @@ Qfloat Qfloat::operator+(const Qfloat& other) {
 
 Qfloat Qfloat::operator-(const Qfloat& other) {
 	Qfloat temp = other;
-	if (temp.getBit(0))
+	if (temp.getBit(LEN - 1))
 		temp.setBit(LEN - 1, 0);
 	else
 		temp.setBit(LEN - 1, 1);
