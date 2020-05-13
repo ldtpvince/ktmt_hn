@@ -130,11 +130,6 @@ void Button::setTextPos(sf::Vector2f newPos)
 	this->text.setPosition(newPos);
 }
 
-sf::Vector2f Button::getTextPos()
-{
-	return this->text.getPosition();
-}
-
 //Them van ban vao mot van ban ton tai
 void Button::addText(std::string newText)
 {

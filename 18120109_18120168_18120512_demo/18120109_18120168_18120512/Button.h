@@ -32,7 +32,6 @@ public:
 	//Ham gan
 	void setText(std::string newText);
 	void setTextPos(sf::Vector2f newPos);
-	sf::Vector2f getTextPos();
 
 	void addText(std::string newText); //adds Text to the Existing text
 

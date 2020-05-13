@@ -580,7 +580,7 @@ string productQfloat(string a, string b, int& exp)
 
 	// Tach lay phan tri gom BIT_SIGN + 1 bit
 	string result = DecTo128Bin(A) + DecTo128Bin(Q);
-	result = result.substr((128 - BIT_SIGN - 1) * 2, BIT_SIGN);
+	result = result.substr(128 - A.binLen, BIT_SIGN + 1);
 
 	// Tach bo so 1 giu phan tri
 	result.erase(result.begin());
@@ -638,9 +638,9 @@ string divideQFloat(string n, string d, int& exp) {
 		test = QInt::DecToBin(dividend);
 		if (dividend < divisor) {
 			result.push_back('0');
-			/*if (floatPointAnchor == -1) {
+			if (floatPointAnchor == -1) {
 				floatPointAnchor = i + 1;
-			}*/
+			}
 			remainder = dividend;
 		}
 		else {
@@ -651,30 +651,29 @@ string divideQFloat(string n, string d, int& exp) {
 		dividend = remainder << 1;
 	}
 
-	//// chuan hoa ket qua
-	//if (dividend == zero) {
-	//	for (int i = 0; i < result.length(); i++) {
-	//		if (result[i] == '1') {
-	//			floatPointAnchor = result.length() - 1 - i;
-	//			exp += BIT_SIGN - floatPointAnchor;
-	//			break;
-	//		}
-	//	}
-	//}
-	//else  if (floatPointAnchor == BIT_SIGN) {
-	//	for (int i = floatPointAnchor; i >= 0; i--) {
-	//		if (result[i] == '1') {
-	//			floatPointAnchor = i;
-	//			break;
-	//		}
-	//	}
+	// chuan hoa ket qua
+	if (dividend == zero) {
+		for (int i = 0; i < result.length(); i++) {
+			if (result[i] == '1') {
+				floatPointAnchor = result.length() - 1 - i;
+				exp += BIT_SIGN - floatPointAnchor;
+				break;
+			}
+		}
+	}
+	else  if (floatPointAnchor == BIT_SIGN) {
+		for (int i = floatPointAnchor; i >= 0; i--) {
+			if (result[i] == '1') {
+				floatPointAnchor = i;
+				break;
+			}
+		}
 
-	//	exp -= BIT_SIGN - floatPointAnchor;
-	//}
+		exp -= BIT_SIGN - floatPointAnchor;
+	}
 
 	// xoa cac bit phia truoc
-	//result = result.substr(BIT_SIGN + 1 - floatPointAnchor);
-	result = result.substr(1);
+	result = result.substr(BIT_SIGN + 1 - floatPointAnchor);
 
 	return result;
 }

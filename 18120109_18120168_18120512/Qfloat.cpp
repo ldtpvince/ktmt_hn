@@ -580,7 +580,7 @@ string productQfloat(string a, string b, int& exp)
 
 	// Tach lay phan tri gom BIT_SIGN + 1 bit
 	string result = DecTo128Bin(A) + DecTo128Bin(Q);
-	result = result.substr((128 - BIT_SIGN - 1) * 2, BIT_SIGN);
+	result = result.substr(128 - A.binLen, BIT_SIGN + 1);
 
 	// Tach bo so 1 giu phan tri
 	result.erase(result.begin());

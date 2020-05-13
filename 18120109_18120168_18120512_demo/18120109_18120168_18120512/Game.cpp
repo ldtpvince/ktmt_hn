@@ -117,6 +117,7 @@ void Game::drawStuff()
 
 	//Ve man hinh cua may tinh
 	this->screen.draw(&this->window);
+
 }
 
 //Cap nhat cac thanh phan cua may tinh 
@@ -278,6 +279,7 @@ void Game::initNumber()
 //Khoi tao cac Button toan tu
 void Game::initOperators()
 {
+
 	sf::Vector2f operSize(58, 58);
 
 	//Cac toan tu: Bo sung << là "(", >> là ")", &, | là "@", ^, ~
@@ -409,6 +411,7 @@ void Game::screenProcessor(std::string toAdd)
 		{
 			this->screen.setText(this->checker.doMath(this->screen.getText(), MODE));
 		}
+
 	}
 	else
 	{
@@ -420,19 +423,6 @@ void Game::screenProcessor(std::string toAdd)
 				this->screen.addText(toAdd);
 			}
 		}
-		/*else {
-			sf::Vector2f pos = this->screen.getTextPos();
-			pos.y += 5;
-			this->screen.setTextPos(pos);
-
-			if (this->screen.getText() != "ERROR")
-			{
-				this->screen.addText(toAdd);
-			}
-		}*/
-		/*else {
-			this->screen.addText("\n");
-		}*/
 	}
 }
 
