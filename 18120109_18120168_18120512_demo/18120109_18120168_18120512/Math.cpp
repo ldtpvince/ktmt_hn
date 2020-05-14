@@ -66,7 +66,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 	std::string answer = toProcess;
 
 	//Kiem tra tinh hop le cua chuoi bieu thuc
-	answer = this->validate(answer);
+	//answer = this->validate(answer);
 
 	//Tinh toan khi chuoi bieu thuc hop le
 	if (answer != "ERROR")
@@ -78,7 +78,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 			char opera[] = { '+', '-', '*', '/' };
 			std::string a, b;
 			char calc = ' ';
-			int i = 0;
+			int i = 1;
 			for (; i < toProcess.length(); i++)
 			{
 				//Checking Every Element in the String to see if its an Operator 
@@ -86,6 +86,9 @@ std::string Math::doMath(std::string toProcess, int mode)
 				{
 					if (toProcess[i] == opera[j])
 					{
+						//Kiem tra neu so hang thu 2 la so am
+						if (toProcess[i - 1] == calc)
+							break;
 						//Tim thay so hang
 						a = toProcess.substr(0, i);
 						b = toProcess.substr(i + 1);
@@ -143,9 +146,9 @@ std::string Math::doMath(std::string toProcess, int mode)
 			}
 			else
 			{
-				char opera[] = { '+', '-', '*', '/', '&', '|', '^', '|' };
+				char opera[] = { '+', '-', '*', '/', '&', '|', '^' };
 				char calc = ' ';
-				int i = 0;
+				int i = 1;
 				for (; i < toProcess.length(); i++)
 				{
 					//Checking Every Element in the String to see if its an Operator 
@@ -153,7 +156,10 @@ std::string Math::doMath(std::string toProcess, int mode)
 					{
 						if (toProcess[i] == opera[j])
 						{
-							//Tim thay so hang
+							//Kiem tra neu so hang thu 2 la so am
+							if (toProcess[i - 1] == calc)
+								break;
+							
 							a = toProcess.substr(0, i);
 							b = toProcess.substr(i + 1);
 							calc = opera[j];
