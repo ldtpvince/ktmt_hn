@@ -65,9 +65,6 @@ std::string Math::doMath(std::string toProcess, int mode)
 {
 	std::string answer = toProcess;
 
-	//Kiem tra tinh hop le cua chuoi bieu thuc
-	//answer = this->validate(answer);
-
 	//Tinh toan khi chuoi bieu thuc hop le
 	if (answer != "ERROR")
 	{
@@ -188,69 +185,6 @@ std::string Math::doMath(std::string toProcess, int mode)
 	return answer;
 }
 
-
-//Kiem tra bieu thuc chuoi hop le
-std::string Math::validate(std::string toProcess)
-{
-	//Luu ket qua
-	std::string answer = toProcess;
-
-	/*
-		Kiem tra tinh hop le cua bieu thuc
-		1) Khong co 2 toan tu lien ke nhau
-		2) Khong bat dau bang toan tu
-		3) Khong ket thuc boi 1 toan tu	
-	*/
-
-	//Chia chuoi bieu thuc ra thanh 2 ky tu lien tiep cua chuoi
-	//Vaf luu moi cap trong moi cap vector
-	//So sanh moi cap voi cac ket hop toan tu khong hop le
-
-	std::vector<std::string> pairs;
-	bool isOver = false;
-	int pos = 0; //Vi tri bat dau
-	while (!isOver)
-	{
-		if (pos + 1 <= toProcess.length())
-		{
-			pairs.push_back(toProcess.substr(pos,2));
-			pos += 1; //Chay ket cap tiep theo
-		}
-		else
-		{
-			isOver = true; //Ket thuc vong lap
-		}
-	}
-
-	//Kiem tra 2 toan khong lien ke nhau
-	//So sanh tung cap voi cac ket hop toan tu khong hop le
-	for (int i = 0; i < pairs.size(); i++)
-	{
-		for (int j = 0; j < this->invalidOper.size(); j++)
-		{
-			if (pairs[i] == this->invalidOper[j])
-			{
-				answer = "ERROR";
-			}
-		}
-	}
-
-	if (toProcess.length() >= 1)
-	{
-
-		//Kiem tra phan tu dau hoac cuoi khong la toan tu
-		for (int i = 0; i < sizeof(this->oper) / sizeof(std::string); i++)
-		{
-			if (toProcess.substr(0, 1) == this->oper[i] ||
-				toProcess.substr(toProcess.length() - 1, 1) == this->oper[i])
-			{
-				answer = "ERROR";
-			}
-		}
-	}
-	return answer;
-}
-
 //Ham su dung de chuyen he tu mode1 sang mode2
 std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
 {
@@ -272,7 +206,7 @@ std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
 			QInt temp = BinToDec(toProcess);
 			answer = temp.QIntToStrDec();
 		}
-		else if (mode2 == 16);
+		else if (mode2 == 16)
 			answer = BinToHex(toProcess);
 	}
 	else //He thap luc
