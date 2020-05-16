@@ -1,15 +1,15 @@
-#include "Game.h"
+#include "Calculator.h"
 #include <iostream>
 
 
 //Khoi tao mac dinh
-Game::Game()
-	:window(sf::VideoMode(836,500),"109 - 168 - 512 Calculator", sf::Style::Close | sf::Style::Titlebar)
+Calculator::Calculator()
+	:window(sf::VideoMode(836, 500), "109 - 168 - 512 Calculator", sf::Style::Close | sf::Style::Titlebar)
 {
 	//Man hinh
 	this->windowTexture.loadFromFile("Sprites/BG Color.png");
 	this->windowBody.setSize(sf::Vector2f(836, 500)); // (500, 500)
-	this->windowBody.setPosition(sf::Vector2f(0.f, 0.f)); 
+	this->windowBody.setPosition(sf::Vector2f(0.f, 0.f));
 	this->windowBody.setTexture(&windowTexture);
 
 	this->font = new sf::Font(); //Phong chu mat dinh cho tat ca Button
@@ -22,10 +22,10 @@ Game::Game()
 	this->screenTexture.loadFromFile("Sprites/Screen.png");
 
 	//Khoi tao man hinh
-	this->screen = Button(sf::Vector2f(836, 150), sf::Vector2f(0,80), "", "",   // (500, 150)
+	this->screen = Button(sf::Vector2f(836, 150), sf::Vector2f(0, 80), "", "",   // (500, 150)
 		&screenTexture, &screenTexture, &screenTexture, sf::Color::Black, 30, this->font);
 
-	this->screen.setTextPos(sf::Vector2f(14,102));
+	this->screen.setTextPos(sf::Vector2f(14, 102));
 
 
 	this->initNumber(); //Khoi tao cac Button so
@@ -36,7 +36,7 @@ Game::Game()
 }
 
 //Huy may tinh
-Game::~Game()
+Calculator::~Calculator()
 {
 	delete this->font;
 	for (int i = 0; i < this->numTextures.size(); i++)
@@ -46,7 +46,7 @@ Game::~Game()
 
 	for (int i = 0; i < this->operTextures.size(); i++)
 	{
-		this->operTextures[i].deleteData(); 
+		this->operTextures[i].deleteData();
 	}
 
 	for (int i = 0; i < this->numeralSystems.size(); i++)
@@ -56,18 +56,18 @@ Game::~Game()
 }
 
 //Khoi dong may tinh
-void Game::start()
+void Calculator::start()
 {
-	gameLoop(); //Bat dau vong lap cua may tinh
+	CalculatorLoop(); //Bat dau vong lap cua may tinh
 }
 
 //Vong lap chinh cua may tinh
-void Game::gameLoop()
+void Calculator::CalculatorLoop()
 {
 
 	while (this->window.isOpen())
 	{
-		sf::Event evnt; 
+		sf::Event evnt;
 		//Xu ly cac su kien
 		while (window.pollEvent(evnt))
 		{
@@ -94,10 +94,10 @@ void Game::gameLoop()
 }
 
 //Ham ve tat ca cac thanh phan cua may tinh
-void Game::drawStuff()
+void Calculator::drawStuff()
 {
 	window.draw(this->windowBody); //Ve nen cua may tinh
-	//Ve cac Button so
+								   //Ve cac Button so
 	for (int i = 0; i < this->numbers.size(); i++)
 	{
 		numbers[i].draw(&this->window);
@@ -121,7 +121,7 @@ void Game::drawStuff()
 }
 
 //Cap nhat cac thanh phan cua may tinh 
-void Game::updateStuff()
+void Calculator::updateStuff()
 {
 	//Cap nhat trang thai cua Button so
 	for (int i = 0; i < this->numbers.size(); i++)
@@ -171,7 +171,7 @@ void Game::updateStuff()
 	//Hien thi Button he dem duoc chon
 	if (MODE == 2) //He nhi phan
 	{
-		numeralSystems[1].pressedButton(); 
+		numeralSystems[1].pressedButton();
 	}
 	else if (MODE == 10) //He thap phan
 	{
@@ -186,7 +186,7 @@ void Game::updateStuff()
 }
 
 //Ham xu ly cac thanh phan cua may tinh
-void Game::processStuff()
+void Calculator::processStuff()
 {
 	std::string pressedStuff = "";
 
@@ -218,7 +218,7 @@ void Game::processStuff()
 }
 
 //Khoi tao cac Button so
-void Game::initNumber()
+void Calculator::initNumber()
 {
 	//Kich thuoc Button so
 	sf::Vector2f numSize(112, 58);
@@ -236,7 +236,7 @@ void Game::initNumber()
 		tempIdle->loadFromFile("Sprites/#" + numsValue[i] + ".png");
 		tempHover->loadFromFile("Sprites/#" + numsValue[i] + " H.png");
 		tempPressed->loadFromFile("Sprites/#" + numsValue[i] + " H.png");
-		numTextures.push_back(ButtonTexture(tempIdle,tempHover,tempPressed)); 
+		numTextures.push_back(ButtonTexture(tempIdle, tempHover, tempPressed));
 	}
 
 	//Khoi tao so 0 rieng boi vi vi tri dat dac biet
@@ -248,14 +248,14 @@ void Game::initNumber()
 	float xPos = 139; //Quan ly vi tri XPos cua Button
 	float yPos = 427; //Quan ly vi tri YPos cua Button
 
-	//Khoi tao cac Button so tu 1-9 va A-F
+					  //Khoi tao cac Button so tu 1-9 va A-F
 	for (int i = 1; i < total; i++)
 	{
 		this->numbers.push_back(Button(
-		numSize,sf::Vector2f(xPos, yPos), numsValue[i],"",
+			numSize, sf::Vector2f(xPos, yPos), numsValue[i], "",
 			numTextures[i].getIdle(), numTextures[i].getHover(), numTextures[i].getPressed(),
 			sf::Color::Black, 30, this->font));
-	
+
 		if (i == 5)
 		{
 			//Cai lai vi tri bat dau
@@ -277,7 +277,7 @@ void Game::initNumber()
 }
 
 //Khoi tao cac Button toan tu
-void Game::initOperators()
+void Calculator::initOperators()
 {
 
 	sf::Vector2f operSize(58, 58);
@@ -294,12 +294,12 @@ void Game::initOperators()
 		sf::Texture* tempIdle = new sf::Texture();
 		sf::Texture* tempHover = new sf::Texture();
 		sf::Texture* tempPressed = new sf::Texture();
-		
+
 		tempIdle->loadFromFile("Sprites/" + operValues[i] + ".png");
 		tempHover->loadFromFile("Sprites/" + operValues[i] + " H.png");
 		tempPressed->loadFromFile("Sprites/" + operValues[i] + " H.png");
 
-		operTextures.push_back(ButtonTexture(tempIdle,tempHover,tempPressed));
+		operTextures.push_back(ButtonTexture(tempIdle, tempHover, tempPressed));
 	}
 
 	//Khoi tao cac toan tu
@@ -341,12 +341,12 @@ void Game::initOperators()
 }
 
 //Khoi tao he dem
-void Game::initNumeralSystem()
+void Calculator::initNumeralSystem()
 {
 	sf::Vector2f numeralSize(112, 58);
 
 	//Cac he dem: DEC, BIN, HEX
-	std::string numeralValues[] = { "d", "b", "h"};
+	std::string numeralValues[] = { "d", "b", "h" };
 
 	int numeralAmount = sizeof(numeralValues) / sizeof(std::string);
 
@@ -382,7 +382,7 @@ void Game::initNumeralSystem()
 }
 
 //Xu ly van ban tren man hinh de cap nhat
-void Game::screenProcessor(std::string toAdd)
+void Calculator::screenProcessor(std::string toAdd)
 {
 	//Kiem tra neu Button Backspace (Del) hoac AC duoc chon
 	//Va Button toan tu = duoc chon
@@ -405,7 +405,7 @@ void Game::screenProcessor(std::string toAdd)
 	{
 		//Lop Math kiem tra tinh hop le cua bieu thuc
 		//Neu khong hop le se xuat ra ERROR
-		
+
 		//Kiem tra va tinh toan sau do xuat ra man hinh
 		if (this->screen.getText().length() > 0)
 		{
@@ -427,7 +427,7 @@ void Game::screenProcessor(std::string toAdd)
 }
 
 //Cho phep nguoi dung nhap tu ban phim
-std::string Game::keyboardInput()
+std::string Calculator::keyboardInput()
 {
 	double timer = 8.5; //Su dung de quan ly so luong duoc nhap vao tai 1 khoang thoi gian
 	std::string answer = "";

@@ -6,7 +6,7 @@
 #include "QInt.h"
 #include "Qfloat.h"
 #include <SFML/Graphics.hpp>
-#include "Game.h"
+#include "Calculator.h"
 
 using namespace std;
 
@@ -200,7 +200,7 @@ string process(string input, int mode) {
 int main(int argc, char* argv[]) {
 	//Kiem tra so luong tham so
 	if (argc != 4) {
-		Game calculator;
+		Calculator calculator;
 		calculator.start();
 		return 0;
 	}

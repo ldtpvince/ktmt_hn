@@ -5,15 +5,15 @@
 #include "ButtonTexture.h"
 #include "Math.h"
 
-class Game
+class Calculator
 {
 public:
-	
-	Game();//Khoi tao mat dinh
+
+	Calculator();//Khoi tao mat dinh
 	void start(); //Kich hoat may tinh 
-	~Game();//Huy may tinh
+	~Calculator();//Huy may tinh
 private:
-	void gameLoop();//Vong  lap cua mat tinh
+	void CalculatorLoop();//Vong  lap cua mat tinh
 	void drawStuff(); //Ham ve cac thanh phan co trong may tinh
 	void updateStuff(); //Ham cap nhat cac thanh phan cua may tinh
 	void processStuff(); //Ham xu ly cac thanh phan cua may tinh
@@ -24,22 +24,22 @@ private:
 	std::string keyboardInput();//Cho phep nhap bang ban phim
 private:
 	sf::RenderWindow window;//Man hinh may tinh
-	sf::Texture windowTexture; 
+	sf::Texture windowTexture;
 	sf::RectangleShape windowBody;
 
 	sf::Font *font; //Font chu
 
 	//Ket cau man hinh
 	sf::Texture screenTexture;
-	
+
 	//Man hinh thuc su
-	Button screen; 
+	Button screen;
 
 	//Ket cau cua so
 	std::vector<ButtonTexture> numTextures;
 
 	//Tat ca Button cua so
-	std::vector<Button> numbers; 
+	std::vector<Button> numbers;
 
 	//Ket cau cua toan tu
 	std::vector<ButtonTexture> operTextures;
@@ -55,7 +55,7 @@ private:
 
 	int MODE = 10; //He co so 10 ban dau
 
-	//Quan ly thoi gian nhap tu ban phim
+				   //Quan ly thoi gian nhap tu ban phim
 	double counter;
 
 	//Thuc hien tinh toan cua may tinh 
