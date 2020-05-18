@@ -233,12 +233,16 @@ string toStrDec(Qfloat x) {
 	string strSigni = strBin.substr(16, 112);
 	if (strBin[0] == '1')
 		result += "-";
-
+	int exp = stoi(strExp, nullptr, 2);
+	exp -= bias;
+	string strInt = "1";
 	if (checkStr(strExp, '0')) {
 		if (checkStr(strSigni, '0'))
 			return "0";
-		else
-			return result + "DENORMALIZED";
+		else {
+			exp = MIN_EXP + 1;
+			strInt = "0";
+		}
 	}
 	else
 		if (checkStr(strExp, '1')) {
@@ -247,11 +251,7 @@ string toStrDec(Qfloat x) {
 			else
 				return "NaN";
 		}
-	int exp = stoi(strExp, nullptr, 2);
-	exp -= bias;
-
 	//Tim phan nguyen, thap phan o he nhi phan
-	string strInt = "1";
 	string strFrac = strSigni;
 	while (exp != 0) {
 		if (exp < 0) {
@@ -267,13 +267,10 @@ string toStrDec(Qfloat x) {
 			exp--;
 		}
 	}
-
 	while (strInt.length() > 1 && strInt[0] == '0')
 		strInt.erase(0, 1);
 	while (strFrac.length() > 1 && strFrac[strFrac.length() - 1] == '0')
 		strFrac.erase(strFrac.length() - 1, 1);
-
-	//Cai dat tren co the cai tien them vao so 0
 	//Chuyen doi phan nguyen sang he 10
 	QInt tempInt = BinToDec(strInt);
 	string Int = tempInt.QIntToStrDec();
