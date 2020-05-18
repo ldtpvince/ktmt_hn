@@ -112,27 +112,23 @@ string processQInt(vector<string> input) {
 		int base = stoi(input[0]);
 		QInt a;
 		scanQIntFromStr(a, input[1], base);
-		if (input[2].length() == 1) {
+		int pos = findInVector(shAndRo, input[2]);
+		if (pos) {
+			int b = stoi(input[3]);
+			return calcShiftAndRotate(a, b, pos, base);
+		}
+		pos = findInVector(compare, input[2]);
+		if (pos) {
 			QInt b;
 			scanQIntFromStr(b, input[3], base);
-			return printQIntToStr(calcQInt1(a, b, input[2][0]), base);
+			if (calcCompare(a, b, pos))
+				return "true";
+			else
+				return "false";
 		}
-		else {
-			int pos = findInVector(shAndRo, input[2]);
-			if (pos) {
-				int b = stoi(input[3]);
-				return calcShiftAndRotate(a, b, pos, base);
-			}
-			pos = findInVector(compare, input[2]);
-			if (pos) {
-				QInt b;
-				scanQIntFromStr(b, input[3], base);
-				if (calcCompare(a, b, pos))
-					return "true";
-				else
-					return "false";
-			}
-		}
+		QInt b;
+		scanQIntFromStr(b, input[3], base);
+		return printQIntToStr(calcQInt1(a, b, input[2][0]), base);
 	}
 }
 
