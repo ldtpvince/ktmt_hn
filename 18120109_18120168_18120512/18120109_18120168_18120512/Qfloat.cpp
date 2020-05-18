@@ -648,29 +648,17 @@ string divideQFloat(string n, string d, int& exp) {
 		dividend = remainder << 1;
 	}
 
-	// chuan hoa ket qua
-	if (dividend == zero) {
-		for (int i = 0; i < result.length(); i++) {
-			if (result[i] == '1') {
-				floatPointAnchor = result.length() - 1 - i;
-				exp += BIT_SIGN - floatPointAnchor;
-				break;
-			}
-		}
-	}
-	else  if (floatPointAnchor == BIT_SIGN) {
-		for (int i = floatPointAnchor; i >= 0; i--) {
-			if (result[i] == '1') {
-				floatPointAnchor = i;
-				break;
-			}
-		}
-
-		exp -= BIT_SIGN - floatPointAnchor;
-	}
-
 	// xoa cac bit phia truoc
-	result = result.substr(BIT_SIGN + 1 - floatPointAnchor);
+	for (int i = 0; i < result.length(); i++) {
+		if (result[i] == '0') {
+			continue;
+		}
+		else {
+			exp -= i;
+			result = result.substr(i + 1);
+			break;
+		}
+	}
 
 	return result;
 }
