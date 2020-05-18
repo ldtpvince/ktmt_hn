@@ -30,8 +30,12 @@ public:
 	std::string returnValue();
 
 	//Ham gan
-	void setText(std::string newText);
+	void setText(std::string newText, bool setAll = false);
 	void setTextPos(sf::Vector2f newPos);
+	void setNewLineTextPos(int line, sf::Vector2f newPos);
+
+	sf::Vector2f getTextPos();
+	sf::Vector2f getNextLineTextPos(int line);
 
 	void addText(std::string newText); //adds Text to the Existing text
 
@@ -41,6 +45,9 @@ private:
 	sf::RectangleShape body; //The actual button
 	//Gia tri cua button
 	sf::Text text;
+
+	// text tren cac dong khac
+	sf::Text newText[2];
 
 	//Trang thai cua button va hinh anh hien thi tuong ung
 	States buttonState;

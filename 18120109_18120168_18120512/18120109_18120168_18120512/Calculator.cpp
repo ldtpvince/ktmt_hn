@@ -26,7 +26,8 @@ Calculator::Calculator()
 		&screenTexture, &screenTexture, &screenTexture, sf::Color::Black, 30, this->font);
 
 	this->screen.setTextPos(sf::Vector2f(14, 102));
-
+	this->screen.setNewLineTextPos(0, sf::Vector2f(14, 132));
+	this->screen.setNewLineTextPos(1, sf::Vector2f(14, 162));
 
 	this->initNumber(); //Khoi tao cac Button so
 	this->initOperators();//Khoi tao cac Button toan tu
@@ -117,7 +118,6 @@ void Calculator::drawStuff()
 
 	//Ve man hinh cua may tinh
 	this->screen.draw(&this->window);
-
 }
 
 //Cap nhat cac thanh phan cua may tinh 
@@ -399,7 +399,7 @@ void Calculator::screenProcessor(std::string toAdd)
 	else if (toAdd == "AC")
 	{
 		//Xoa toan bo man hinh
-		this->screen.setText("");
+		this->screen.setText("", true);
 	}
 	else if (toAdd == "=")
 	{
@@ -416,13 +416,14 @@ void Calculator::screenProcessor(std::string toAdd)
 	else
 	{
 		//Them vao noi dung man hinh neu it hon 43 ki tu
-		if (this->screen.getText().length() < 43)
+		/*if (this->screen.getText().length() < 43)
 		{
 			if (this->screen.getText() != "ERROR")
 			{
 				this->screen.addText(toAdd);
 			}
-		}
+		}*/
+		this->screen.addText(toAdd);
 	}
 }
 

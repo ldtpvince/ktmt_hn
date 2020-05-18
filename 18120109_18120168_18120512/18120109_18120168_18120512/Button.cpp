@@ -25,11 +25,19 @@ Button::Button(sf::Vector2f size, sf::Vector2f position, std::string value , std
 	this->text.setFillColor(textColor); 
 	this->text.setFont(*font);
 
+	// Cai dat van ban o dong moi
+	for (int i = 0; i < 2; i++) {
+		this->newText[i].setString("");
+		this->newText[i].setCharacterSize(charSize);
+		this->newText[i].setFillColor(textColor);
+		this->newText[i].setFont(*font);
+	}
+
 	//Cai dat vi tri cua Button
-	this->text.setPosition(sf::Vector2f(
+	/*this->text.setPosition(sf::Vector2f(
 		position.x + (this->body.getGlobalBounds().width / 2.f) - (this->text.getGlobalBounds().width /2)
 		, position.y + (this->body.getGlobalBounds().height / 2.f) - (this->text.getGlobalBounds().height ) 
-		+ (this->text.getGlobalBounds().height / 7.f)));
+		+ (this->text.getGlobalBounds().height / 7.f)));*/
 
 	//Cai dat ket cau cho Button
 	this->idleTexture = idleTexture;
@@ -47,6 +55,8 @@ void Button::draw(sf::RenderWindow * window)
 {
 	window->draw(this->body); //Ve button tren window 
 	window->draw(this->text); //Ve van ban Button len Window
+	window->draw(this->newText[0]);
+	window->draw(this->newText[1]);
 }
 
 //Cap nhat trang thai Button dua tren thao tac cua nguoi dung: Click, Hover or Ignore 
@@ -120,9 +130,28 @@ std::string Button::returnValue()
 
 
 //Ham gan
-void Button::setText(std::string newText)
+void Button::setText(std::string newText, bool setAll)
 {
-	this->text.setString(newText);
+	if (newText.length() < 43) {
+		this->text.setString(newText);
+	}
+	else if (newText.length() < 85) {
+		this->text.setString(newText.substr(0, 42));
+		this->newText[0].setString(newText.substr(42));
+		std::string test = this->newText[0].getString();
+		std::cout << test << std::endl;
+	}
+	else if (newText.length() < 127) {
+		this->text.setString(newText.substr(0, 42));
+		this->newText[0].setString(newText.substr(42, 42));
+		this->newText[1].setString(newText.substr(84));
+	}
+
+	if (setAll) {
+		this->text.setString(newText);
+		this->newText[0].setString(newText);
+		this->newText[1].setString(newText);
+	}
 }
 
 void Button::setTextPos(sf::Vector2f newPos)
@@ -130,14 +159,33 @@ void Button::setTextPos(sf::Vector2f newPos)
 	this->text.setPosition(newPos);
 }
 
+sf::Vector2f Button::getTextPos() {
+	return this->text.getPosition();
+}
+
+void Button::setNewLineTextPos(int line, sf::Vector2f newPos)
+{
+	this->newText[line].setPosition(newPos);
+}
+
 //Them van ban vao mot van ban ton tai
 void Button::addText(std::string newText)
 {
-	this->text.setString(this->text.getString() + newText);
+	if (this->text.getString().getSize() < 42) {
+		this->text.setString(this->text.getString() + newText);
+	}
+	else if (this->newText[0].getString().getSize() < 42) {
+		this->newText[0].setString(this->newText[0].getString() + newText);
+	/*	std::string test = this->newText[0].getString();
+		std::cout << test << std::endl;*/
+	}
+	else {
+		this->newText[1].setString(this->newText[1].getString() + newText);
+	}
 }
 
 //Ham lay
 std::string Button::getText() const
 {
-	return this->text.getString();
+	return this->text.getString() + this->newText[0].getString() + this->newText[1].getString();
 }
