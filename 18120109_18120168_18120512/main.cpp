@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) {
 	string input;
 	//Doc file va xu ly
 	while (getline(in, input))
-		cout << process(input, mode) << endl;
+		out << process(input, mode) << endl;
 	in.close();
 	out.close();
 }
