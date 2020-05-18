@@ -241,7 +241,7 @@ string toStrDec(Qfloat x) {
 			return result + "DENORMALIZED";
 	}
 	else
-		if (checkStr(strExp, '0')) {
+		if (checkStr(strExp, '1')) {
 			if (checkStr(strSigni, '0'))
 				return result + "Inf";
 			else
