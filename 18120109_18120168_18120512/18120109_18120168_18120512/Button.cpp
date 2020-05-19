@@ -174,7 +174,6 @@ void Button::addText(std::string newText)
 {
 	if (this->text.getString().getSize() < 43) {
 		this->text.setString(this->text.getString() + newText);
-		std::cout << this->text.getString().getSize();
 	}
 	else if (this->newText[0].getString().getSize() < 43) {
 		this->newText[0].setString(this->newText[0].getString() + newText);
