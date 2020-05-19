@@ -225,6 +225,55 @@ string mulByHalf(string s, bool con)
 	return result;
 }
 
+//Nhan day so nguyen s voi 2
+string mulByTwo(string s) {
+	string res;
+	int temp = 0;
+	for (int i = s.length() - 1; i >= 0; i--) {
+		int kq = (s[i] - '0') * 2 + temp;
+		temp = kq / 10;
+		char c = kq % 10 + '0';
+		res = c + res;
+	}
+	if (temp != 0) {
+		char c = temp + '0';
+		res = c + res;
+	}
+	return res;
+}
+
+//Cong day so nguyen s voi 1
+string addOne(string s) {
+	string res;
+	int temp = 1;
+	for (int i = s.length() - 1; i >= 0; i--) {
+		int kq = (s[i] - '0') + temp;
+		temp = kq / 10;
+		char c = kq % 10 + '0';
+		res = c + res;
+	}
+	if (temp != 0) {
+		char c = temp + '0';
+		res = c + res;
+	}
+	return res;
+}
+
+//Chuyen doi day bit (khong gioi han) thanh chuoi so nguyen
+string strBinToStrDec(string s) {
+	string result = "0";
+	if (s.length() == 0)
+		return result;
+	if (s[0] == '1')
+		result = "1";
+	for (int i = 1; i < s.length(); i++) {
+		result = mulByTwo(result);
+		if (s[i] == '1')
+			result = addOne(result);
+	}
+	return result;
+}
+
 //Chuyen Qfloat sang chuoi thap phan
 string toStrDec(Qfloat x) {
 	string result;
@@ -272,8 +321,7 @@ string toStrDec(Qfloat x) {
 	while (strFrac.length() > 1 && strFrac[strFrac.length() - 1] == '0')
 		strFrac.erase(strFrac.length() - 1, 1);
 	//Chuyen doi phan nguyen sang he 10
-	QInt tempInt = BinToDec(strInt);
-	string Int = tempInt.QIntToStrDec();
+	string Int = strBinToStrDec(strInt);
 	//Chuyen doi phan thap phan sang he 10
 	string Frac;
 	int pos = strFrac.find_last_of('1');
@@ -708,4 +756,3 @@ Qfloat Qfloat::operator/(const Qfloat& other) {
 	result = BinToDec(strResult);
 	return result;
 }
-
