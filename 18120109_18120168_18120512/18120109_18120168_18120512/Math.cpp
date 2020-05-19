@@ -182,6 +182,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 		}
 	}
 
+	answer = changeNumeral(answer, 10, mode);
 	return answer;
 }
 

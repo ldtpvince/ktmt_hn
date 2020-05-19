@@ -132,19 +132,20 @@ std::string Button::returnValue()
 //Ham gan
 void Button::setText(std::string newText, bool setAll)
 {
-	if (newText.length() < 43) {
+	if (newText.length() <= 43) {
 		this->text.setString(newText);
+		this->newText[0].setString("");
+		this->newText[1].setString("");
 	}
-	else if (newText.length() < 85) {
-		this->text.setString(newText.substr(0, 42));
-		this->newText[0].setString(newText.substr(42));
-		std::string test = this->newText[0].getString();
-		std::cout << test << std::endl;
+	else if (newText.length() <= 86) {
+		this->text.setString(newText.substr(0, 43));
+		this->newText[0].setString(newText.substr(43));
+		this->newText[1].setString("");
 	}
-	else if (newText.length() < 127) {
-		this->text.setString(newText.substr(0, 42));
-		this->newText[0].setString(newText.substr(42, 42));
-		this->newText[1].setString(newText.substr(84));
+	else {
+		this->text.setString(newText.substr(0, 43));
+		this->newText[0].setString(newText.substr(43, 43));
+		this->newText[1].setString(newText.substr(86));
 	}
 
 	if (setAll) {
@@ -171,13 +172,12 @@ void Button::setNewLineTextPos(int line, sf::Vector2f newPos)
 //Them van ban vao mot van ban ton tai
 void Button::addText(std::string newText)
 {
-	if (this->text.getString().getSize() < 42) {
+	if (this->text.getString().getSize() < 43) {
 		this->text.setString(this->text.getString() + newText);
+		std::cout << this->text.getString().getSize();
 	}
-	else if (this->newText[0].getString().getSize() < 42) {
+	else if (this->newText[0].getString().getSize() < 43) {
 		this->newText[0].setString(this->newText[0].getString() + newText);
-	/*	std::string test = this->newText[0].getString();
-		std::cout << test << std::endl;*/
 	}
 	else {
 		this->newText[1].setString(this->newText[1].getString() + newText);

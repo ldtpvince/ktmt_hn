@@ -63,4 +63,4 @@ private:
 };
 
 //Ham kiem tra chuoi khong chua toan tu de chuyen he dem
-bool is_number(const std::string& s);
+bool is_number(const std::string& s, int mode);

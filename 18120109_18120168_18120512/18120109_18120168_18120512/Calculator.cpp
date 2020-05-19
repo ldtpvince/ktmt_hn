@@ -143,7 +143,7 @@ void Calculator::updateStuff()
 		{
 			if (i == 0)
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 10)
+				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 10)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 10));
 				}
@@ -151,7 +151,7 @@ void Calculator::updateStuff()
 			}
 			else if (i == 1)
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 2)
+				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 2)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 2));
 				}
@@ -159,7 +159,7 @@ void Calculator::updateStuff()
 			}
 			else
 			{
-				if (screen.getText() != ""&& is_number(screen.getText()) && MODE != 16)
+				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 16)
 				{
 					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 16));
 				}
@@ -562,10 +562,16 @@ std::string Calculator::keyboardInput()
 	return answer;
 }
 
-bool is_number(const std::string& s)
+bool is_number(const std::string& s, int mode)
 {
-	for (int i = 0; i < s.length(); i++)
-		if (!((s[i] >= '0'&&s[i] <= '9') || (s[i] >= 'A'&&s[i] <= 'F')))
+	for (int i = 0; i < s.length(); i++) {
+		if (mode == 10) {
+			if (s[0] == '-') {
+				continue;
+			}
+		}
+		if (!((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'A' && s[i] <= 'F')))
 			return false;
+	}
 	return true;
 }
