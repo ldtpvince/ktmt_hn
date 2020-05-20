@@ -60,6 +60,9 @@ private:
 
 	//Thuc hien tinh toan cua may tinh 
 	Math checker;
+
+	//Bien giu che do: So nguyen lon hay so cham dong
+	bool TYPE = true; // Mac dinh la so nguyen lon
 };
 
 //Ham kiem tra chuoi khong chua toan tu de chuyen he dem

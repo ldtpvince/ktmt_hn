@@ -141,11 +141,17 @@ void Calculator::updateStuff()
 		numeralSystems[i].update(sf::Mouse::getPosition(this->window));
 		if (numeralSystems[i].isPressedButton())
 		{
+			// Kiem tra co phai so cham dong 
+			std::string temp = this->screen.getText();
+			int pos = temp.find('.');
+			if (pos != std::string::npos)
+				TYPE = false;
+
 			if (i == 0)
 			{
 				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 10)
 				{
-					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 10));
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 10, TYPE));
 				}
 				MODE = 10;
 			}
@@ -153,7 +159,7 @@ void Calculator::updateStuff()
 			{
 				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 2)
 				{
-					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 2));
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 2, TYPE));
 				}
 				MODE = 2;
 			}
@@ -161,7 +167,7 @@ void Calculator::updateStuff()
 			{
 				if (screen.getText() != ""&& is_number(screen.getText(), MODE) && MODE != 16)
 				{
-					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 16));
+					this->screen.setText(this->checker.changeNumeral(this->screen.getText(), MODE, 16, TYPE));
 				}
 				MODE = 16;
 			}
@@ -400,6 +406,7 @@ void Calculator::screenProcessor(std::string toAdd)
 	{
 		//Xoa toan bo man hinh
 		this->screen.setText("", true);
+		TYPE = true; // Chuyen ve mac dinh
 	}
 	else if (toAdd == "=")
 	{
@@ -570,7 +577,7 @@ bool is_number(const std::string& s, int mode)
 				continue;
 			}
 		}
-		if (!((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'A' && s[i] <= 'F')))
+		if (!((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'A' && s[i] <= 'F')|| s[i] == '.'))
 			return false;
 	}
 	return true;

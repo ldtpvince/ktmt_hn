@@ -7,23 +7,6 @@
 
 Math::Math()
 {
-	//Khoi tao nhung ket hop toan tu khong hop le de kiem tra
-	this->oper[0] = "/";
-	this->oper[1] = "x";
-	this->oper[2] = "-";
-	this->oper[3] = "+";
-	this->oper[4] = ".";
-
-	int operSize = sizeof(oper) / sizeof(std::string); //Kich co cua cac toan tu
-
-	for (int i = 0; i < operSize; i++)
-	{
-		for (int j = 0; j < operSize; j++)
-		{
-			this->invalidOper.push_back(oper[i] + oper[j]);
-		}
-	}
-
 
 }
 
@@ -65,7 +48,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 {
 	std::string answer = toProcess;
 
-	//Tinh toan khi chuoi bieu thuc hop le
+	//Bieu thuc nhap vao khac "ERROR"
 	if (answer != "ERROR")
 	{
 		//Kiem tra bieu thuc co chua so phan phan
@@ -112,18 +95,19 @@ std::string Math::doMath(std::string toProcess, int mode)
 			if (toProcess[0] == '~')
 			{
 				a = toProcess.substr(1);
-				QInt operand(changeNumeral(toProcess, mode, 10));
+				QInt operand(changeNumeral(a, mode, 10, 1));
 
-				result = operand;
+				result = ~operand;
+				answer = result.QIntToStrDec();
 			}
 			// Xu ly dich bit
 			//Dich trai: <<
-			if (toProcess.find('<') != std::string::npos)
+			else if (toProcess.find('<') != std::string::npos)
 			{
 				int pos = toProcess.find('<');
 				a = toProcess.substr(0, pos);
 				b = toProcess.substr(pos + 2);
-				QInt operand(changeNumeral(a, mode, 10));
+				QInt operand(changeNumeral(a, mode, 10, 1));
 				int ind = std::stoi(b);
 				
 				result = operand << ind;
@@ -135,7 +119,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 				int pos = toProcess.find('>');
 				a = toProcess.substr(0, pos);
 				b = toProcess.substr(pos + 2);
-				QInt operand(changeNumeral(a, mode, 10));
+				QInt operand(changeNumeral(a, mode, 10, 1));
 				int ind = std::stoi(b);
 
 				result = operand >> ind;
@@ -166,7 +150,7 @@ std::string Math::doMath(std::string toProcess, int mode)
 					}
 				}
 
-				QInt operand1(changeNumeral(a, mode, 10)), operand2(changeNumeral(b, mode, 10));
+				QInt operand1(changeNumeral(a, mode, 10, 1)), operand2(changeNumeral(b, mode, 10, 1));
 
 				if (calc != ' ')
 				{
@@ -182,45 +166,57 @@ std::string Math::doMath(std::string toProcess, int mode)
 		}
 	}
 
-	answer = changeNumeral(answer, 10, mode);
+	answer = changeNumeral(answer, 10, mode, 1);
 	return answer;
 }
 
 //Ham su dung de chuyen he tu mode1 sang mode2
-std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2)
+std::string Math::changeNumeral(std::string toProcess, int mode1, int mode2, bool type)
 {
 	std::string answer = toProcess;
-	if (mode1 == 10)
+	if (type)
 	{
-		if (mode2 == 2)
-			answer = strDecToBin(toProcess);
-		else if (mode2 == 16)
+		if (mode1 == 10)
 		{
-			std::string temp = strDecToBin(toProcess);
-			answer = BinToHex(temp);
+			if (mode2 == 2)
+				answer = strDecToBin(toProcess);
+			else if (mode2 == 16)
+			{
+				std::string temp = strDecToBin(toProcess);
+				answer = BinToHex(temp);
+			}
+		}
+		else if (mode1 == 2)
+		{
+			if (mode2 == 10)
+			{
+				QInt temp = BinToDec(toProcess);
+				answer = temp.QIntToStrDec();
+			}
+			else if (mode2 == 16)
+				answer = BinToHex(toProcess);
+		}
+		else //He thap luc
+		{
+			if (mode2 == 10)
+			{
+				std::string temp = strHexToBin(toProcess);
+				//Chuyen tu he co so 2 sang co so 10
+				QInt res = BinToDec(temp);
+				answer = res.QIntToStrDec();
+			}
+			else if (mode2 == 2)
+				answer = strHexToBin(toProcess);
 		}
 	}
-	else if (mode1 == 2)
+	else
 	{
-		if (mode2 == 10)
+		if (mode1 != 16 && mode2 != 16)
 		{
-			QInt temp = BinToDec(toProcess);
-			answer = temp.QIntToStrDec();
+			Qfloat temp;
+			Qfloat::ScanQfloat(temp, toProcess, mode1);
+			answer = Qfloat::PrintQfloat(temp, mode2);
 		}
-		else if (mode2 == 16)
-			answer = BinToHex(toProcess);
-	}
-	else //He thap luc
-	{
-		if (mode2 == 10)
-		{
-			std::string temp = strHexToBin(toProcess);
-			//Chuyen tu he co so 2 sang co so 10
-			QInt res = BinToDec(temp);
-			answer = res.QIntToStrDec();
-		}
-		else if (mode2 == 2)
-			answer = strHexToBin(toProcess);
 	}
 	return answer;
 }
